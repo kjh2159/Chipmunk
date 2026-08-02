@@ -1,0 +1,39 @@
+name: Build Windows App
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Test
+        run: dotnet test --configuration Release --no-restore
+
+      - name: Publish self-contained
+        run: >
+          dotnet publish
+          -c Release
+          -r win-x64
+          --self-contained true
+          -o ./publish
+
+      - name: Upload application
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-x64
+          path: ./publish
