@@ -1,0 +1,13 @@
+<Application x:Class="Chipmunk.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             ShutdownMode="OnExplicitShutdown">
+    <Application.Resources>
+        <SolidColorBrush x:Key="WidgetBackgroundBrush" Color="#E622252A" />
+        <SolidColorBrush x:Key="WidgetForegroundBrush" Color="#FFF3F5F7" />
+        <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#FFF7F7F8" />
+        <SolidColorBrush x:Key="WindowForegroundBrush" Color="#FF202124" />
+        <SolidColorBrush x:Key="SubtleForegroundBrush" Color="#FF6B7280" />
+        <SolidColorBrush x:Key="AccentBrush" Color="#FF4BA3F2" />
+    </Application.Resources>
+</Application>

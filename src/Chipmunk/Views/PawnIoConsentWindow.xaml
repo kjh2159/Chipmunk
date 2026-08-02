@@ -1,0 +1,90 @@
+<Window x:Class="Chipmunk.Views.PawnIoConsentWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="CPU 온도 센서 사용을 위한 선택"
+        Icon="/Chipmunk;component/Assets/chipmunk.ico"
+        Width="560"
+        SizeToContent="Height"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        ShowInTaskbar="True"
+        Topmost="True"
+        Background="{DynamicResource WindowBackgroundBrush}"
+        Foreground="{DynamicResource WindowForegroundBrush}">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel>
+            <TextBlock Text="CPU 온도 센서를 읽으려면 PawnIO가 필요합니다"
+                       FontSize="20"
+                       FontWeight="SemiBold"
+                       TextWrapping="Wrap" />
+            <TextBlock Margin="0,8,0,0"
+                       Foreground="{DynamicResource SubtleForegroundBrush}"
+                       Text="현재 CPU 온도 센서가 제공되지 않았으며 PawnIO가 설치되어 있지 않습니다."
+                       TextWrapping="Wrap" />
+        </StackPanel>
+
+        <Border Grid.Row="1"
+                Margin="0,18,0,0"
+                Padding="14"
+                CornerRadius="8"
+                Background="#1470A5FF">
+            <StackPanel>
+                <TextBlock Text="설치되는 구성요소"
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,6" />
+                <TextBlock TextWrapping="Wrap">
+                    <Run Text="• 공식 PawnIO 2.2.0 디지털 서명 커널 드라이버&#x0a;" />
+                    <Run Text="• 게시자: namazso.eu (namazso)&#x0a;" />
+                    <Run Text="• 목적: LibreHardwareMonitor의 CPU 레지스터 읽기&#x0a;" />
+                    <Run Text="• 설치 시 Windows UAC 관리자 승인이 한 번 필요합니다.&#x0a;" />
+                    <Run Text="• 비제한(unrestricted) 버전은 설치하지 않습니다." />
+                </TextBlock>
+            </StackPanel>
+        </Border>
+
+        <TextBlock Grid.Row="2"
+                   Margin="0,14,0,18"
+                   TextWrapping="Wrap"
+                   Foreground="{DynamicResource SubtleForegroundBrush}">
+            설치하지 않아도 앱은 계속 실행되며 CPU 온도만 N/A로 남습니다.
+            설치 파일은 앱에 포함된 공식 바이너리이며 실행 전에 SHA-256을 검증합니다.
+            <LineBreak />
+            <Hyperlink NavigateUri="https://pawnio.eu/"
+                       RequestNavigate="OnLinkNavigate">PawnIO 공식 사이트</Hyperlink>
+            <Run Text=" · " />
+            <Hyperlink NavigateUri="https://github.com/namazso/PawnIO.Setup/releases/tag/2.2.0"
+                       RequestNavigate="OnLinkNavigate">2.2.0 공식 릴리스</Hyperlink>
+        </TextBlock>
+
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0"
+                    Content="다시 묻지 않기"
+                    HorizontalAlignment="Left"
+                    Padding="12,7"
+                    Click="OnNeverAskAgain" />
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <Button Content="나중에"
+                        Padding="16,7"
+                        Margin="0,0,8,0"
+                        IsCancel="True"
+                        Click="OnLater" />
+                <Button Content="동의하고 설치"
+                        Padding="18,7"
+                        FontWeight="SemiBold"
+                        IsDefault="True"
+                        Click="OnInstall" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

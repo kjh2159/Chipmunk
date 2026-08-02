@@ -1,0 +1,55 @@
+<Window x:Class="Chipmunk.Views.WidgetWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:converters="clr-namespace:Chipmunk.Converters"
+        Title="Chipmunk"
+        Icon="/Chipmunk;component/Assets/chipmunk.ico"
+        Width="Auto"
+        Height="Auto"
+        MinWidth="260"
+        MaxWidth="900"
+        SizeToContent="WidthAndHeight"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ShowInTaskbar="False"
+        ShowActivated="False"
+        Topmost="{Binding AlwaysOnTop}"
+        MouseLeftButtonDown="OnMouseLeftButtonDown">
+    <Window.Resources>
+        <converters:SeverityToBrushConverter x:Key="SeverityBrushConverter" />
+    </Window.Resources>
+    <Grid Margin="10">
+        <Border CornerRadius="11"
+                Background="{DynamicResource WidgetBackgroundBrush}"
+                Opacity="{Binding BackgroundOpacity}">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="14"
+                                  ShadowDepth="2"
+                                  Opacity="0.42"
+                                  Color="#FF000000" />
+            </Border.Effect>
+        </Border>
+        <Grid Margin="13,9,14,9">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Grid.Column="0"
+                    Width="3"
+                    CornerRadius="2"
+                    Background="{Binding OverallSeverity, Converter={StaticResource SeverityBrushConverter}}" />
+            <TextBlock Grid.Column="1"
+                       Margin="9,0,0,0"
+                       Text="{Binding DisplayText}"
+                       ToolTip="{Binding ToolTipText}"
+                       FontFamily="Segoe UI Variable Text, Segoe UI"
+                       FontSize="{Binding WidgetFontSize}"
+                       FontWeight="SemiBold"
+                       Foreground="{Binding OverallSeverity, Converter={StaticResource SeverityBrushConverter}}"
+                       TextWrapping="NoWrap"
+                       VerticalAlignment="Center" />
+        </Grid>
+    </Grid>
+</Window>
