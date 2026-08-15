@@ -107,6 +107,7 @@ Default usage thresholds:
 | Critical | 95% or higher |
 
 Thresholds can be changed from the settings window.
+> For the future work, the font color of the states could be changeable.
 
 <!-- ## CPU temperature and PawnIO
 
