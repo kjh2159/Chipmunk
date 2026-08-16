@@ -42,7 +42,7 @@ It is designed to remain visible without interrupting normal desktop usage.
   <img
     src="src/Chipmunk/Assets/example.png"
     alt="example"
-    width="720"
+    width="480"
   />
 </p>
 
