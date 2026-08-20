@@ -6,10 +6,15 @@ using Chipmunk.Services;
 
 namespace Chipmunk.ViewModels;
 
-public sealed partial class SettingsViewModel : ObservableObject
+public sealed partial class SettingsViewModel : ObservableObject, IDisposable
 {
     private readonly ISettingsService _settingsService;
     private readonly IStartupService _startupService;
+    private readonly ILocalizationService _localization;
+    private readonly AppLanguage _originalLanguage;
+    private bool _suppressLanguagePreview = true;
+    private bool _saved;
+    private bool _disposed;
 
     [ObservableProperty]
     private AppSettings _draft;
@@ -20,19 +25,26 @@ public sealed partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private string? _errorMessage;
 
+    [ObservableProperty]
+    private AppLanguage _selectedLanguage;
+
     public SettingsViewModel(
         ISettingsService settingsService,
         IStartupService startupService,
         IHardwareMonitoringService monitoringService,
-        IWindowPositionService windowPositionService)
+        IWindowPositionService windowPositionService,
+        ILocalizationService localization)
     {
         _settingsService = settingsService;
         _startupService = startupService;
+        _localization = localization;
         Draft = settingsService.Current.Clone();
+        _originalLanguage = Draft.Language;
+        SelectedLanguage = Draft.Language;
         Draft.StartWithWindows = startupService.IsEnabled();
         GpuOptions = new ObservableCollection<GpuOption>(
         [
-            new GpuOption(null, "자동 선택 (사용률이 가장 높은 GPU)"),
+            new GpuOption(null, localization.Get("OptionGpuAutomatic")),
             .. monitoringService.Devices
                 .Where(device => device.Kind is HardwareKind.GpuNvidia or HardwareKind.GpuAmd or HardwareKind.GpuIntel)
                 .Select(device => new GpuOption(device.DeviceId, device.Name))
@@ -41,10 +53,22 @@ public sealed partial class SettingsViewModel : ObservableObject
                       ?? GpuOptions[0];
         MonitorOptions = new ObservableCollection<MonitorOption>(
         [
-            new MonitorOption(null, "주 모니터"),
+            new MonitorOption(null, localization.Get("OptionPrimaryMonitor")),
             .. windowPositionService.GetMonitors()
                 .Select(monitor => new MonitorOption(monitor.DeviceName, monitor.DisplayName))
         ]);
+
+        LanguageOptions =
+        [
+            new(AppLanguage.English, "English"),
+            new(AppLanguage.Korean, "한국어"),
+            new(AppLanguage.Japanese, "日本語"),
+            new(AppLanguage.ChineseSimplified, "简体中文"),
+            new(AppLanguage.Spanish, "Español")
+        ];
+        RefreshLocalizedOptions();
+        _localization.LanguageChanged += OnLanguageChanged;
+        _suppressLanguagePreview = false;
 
         SaveCommand = new AsyncRelayCommand(SaveAsync);
         CancelCommand = new RelayCommand(() => CloseRequested?.Invoke(false));
@@ -53,18 +77,28 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     public ObservableCollection<GpuOption> GpuOptions { get; }
     public ObservableCollection<MonitorOption> MonitorOptions { get; }
-    public IReadOnlyList<int> UpdateIntervals { get; } = [500, 1000, 2000, 5000];
-    public IReadOnlyList<TemperatureUnit> TemperatureUnits { get; } =
-        Enum.GetValues<TemperatureUnit>();
-    public IReadOnlyList<WidgetLayout> Layouts { get; } = Enum.GetValues<WidgetLayout>();
-    public IReadOnlyList<WidgetTheme> Themes { get; } = Enum.GetValues<WidgetTheme>();
-    public IReadOnlyList<DoubleClickAction> DoubleClickActions { get; } =
-        Enum.GetValues<DoubleClickAction>();
+    public IReadOnlyList<LocalizedOption<AppLanguage>> LanguageOptions { get; }
+    public IReadOnlyList<LocalizedOption<int>> UpdateIntervals { get; private set; } = [];
+    public IReadOnlyList<LocalizedOption<TemperatureUnit>> TemperatureUnits { get; private set; } = [];
+    public IReadOnlyList<LocalizedOption<WidgetLayout>> Layouts { get; private set; } = [];
+    public IReadOnlyList<LocalizedOption<WidgetTheme>> Themes { get; private set; } = [];
+    public IReadOnlyList<LocalizedOption<DoubleClickAction>> DoubleClickActions { get; private set; } = [];
 
     public IAsyncRelayCommand SaveCommand { get; }
     public IRelayCommand CancelCommand { get; }
     public IRelayCommand RestoreDefaultsCommand { get; }
     public event Action<bool>? CloseRequested;
+
+    partial void OnSelectedLanguageChanged(AppLanguage value)
+    {
+        if (_suppressLanguagePreview)
+        {
+            return;
+        }
+
+        Draft.Language = value;
+        _localization.Apply(value);
+    }
 
     public async Task ExportAsync(string path)
     {
@@ -76,7 +110,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         }
         catch (Exception exception)
         {
-            ErrorMessage = $"설정 내보내기 실패: {exception.Message}";
+            ErrorMessage = _localization.Format("SettingsExportFailed", exception.Message);
         }
     }
 
@@ -85,25 +119,89 @@ public sealed partial class SettingsViewModel : ObservableObject
         try
         {
             Draft.SelectedGpuId = SelectedGpu?.Id;
+            Draft.Language = SelectedLanguage;
             Draft.Normalize();
             _startupService.SetEnabled(Draft.StartWithWindows);
             await _settingsService.SaveAsync(Draft);
+            _saved = true;
             ErrorMessage = null;
             CloseRequested?.Invoke(true);
         }
         catch (Exception exception)
         {
-            ErrorMessage = $"설정을 저장하지 못했습니다: {exception.Message}";
+            ErrorMessage = _localization.Format("SettingsSaveFailed", exception.Message);
         }
     }
 
     private void RestoreDefaults()
     {
-        Draft = new AppSettings();
+        Draft = new AppSettings { Language = SelectedLanguage };
         SelectedGpu = GpuOptions[0];
-        ErrorMessage = "기본값을 불러왔습니다. 적용을 눌러 저장하세요.";
+        ErrorMessage = _localization.Get("SettingsDefaultsLoaded");
+    }
+
+    private void OnLanguageChanged(AppLanguage language) => RefreshLocalizedOptions();
+
+    private void RefreshLocalizedOptions()
+    {
+        var selectedGpuId = SelectedGpu?.Id ?? Draft.SelectedGpuId;
+        GpuOptions[0] = new GpuOption(null, _localization.Get("OptionGpuAutomatic"));
+        SelectedGpu = GpuOptions.FirstOrDefault(option => option.Id == selectedGpuId)
+                      ?? GpuOptions[0];
+        MonitorOptions[0] = new MonitorOption(null, _localization.Get("OptionPrimaryMonitor"));
+
+        UpdateIntervals =
+        [
+            new(500, _localization.Format("OptionSeconds", 0.5)),
+            new(1000, _localization.Format("OptionSecond", 1)),
+            new(2000, _localization.Format("OptionSeconds", 2)),
+            new(5000, _localization.Format("OptionSeconds", 5))
+        ];
+        TemperatureUnits =
+        [
+            new(TemperatureUnit.Celsius, _localization.Get("OptionCelsius")),
+            new(TemperatureUnit.Fahrenheit, _localization.Get("OptionFahrenheit"))
+        ];
+        Layouts =
+        [
+            new(WidgetLayout.OneLine, _localization.Get("OptionOneLine")),
+            new(WidgetLayout.TwoLines, _localization.Get("OptionTwoLines"))
+        ];
+        Themes =
+        [
+            new(WidgetTheme.System, _localization.Get("OptionSystemTheme")),
+            new(WidgetTheme.Dark, _localization.Get("OptionDarkTheme")),
+            new(WidgetTheme.Light, _localization.Get("OptionLightTheme"))
+        ];
+        DoubleClickActions =
+        [
+            new(DoubleClickAction.TaskManager, _localization.Get("OptionTaskManager")),
+            new(DoubleClickAction.DetailedMonitor, _localization.Get("OptionDetailedMonitor"))
+        ];
+
+        OnPropertyChanged(nameof(UpdateIntervals));
+        OnPropertyChanged(nameof(TemperatureUnits));
+        OnPropertyChanged(nameof(Layouts));
+        OnPropertyChanged(nameof(Themes));
+        OnPropertyChanged(nameof(DoubleClickActions));
+    }
+
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        _disposed = true;
+        _localization.LanguageChanged -= OnLanguageChanged;
+        if (!_saved)
+        {
+            _localization.Apply(_originalLanguage);
+        }
     }
 }
 
 public sealed record GpuOption(string? Id, string DisplayName);
 public sealed record MonitorOption(string? DeviceName, string DisplayName);
+public sealed record LocalizedOption<T>(T Value, string DisplayName);

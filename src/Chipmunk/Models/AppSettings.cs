@@ -4,10 +4,12 @@ namespace Chipmunk.Models;
 
 public sealed class AppSettings
 {
-    public const int CurrentSchemaVersion = 1;
+    public const int CurrentSchemaVersion = 2;
     private static readonly int[] AllowedIntervals = [500, 1000, 2000, 5000];
 
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public AppLanguage Language { get; set; } = AppLanguageDefaults.Detect();
     public bool ShowCpuTemperature { get; set; } = true;
     public bool ShowCpuUsage { get; set; } = true;
     public bool ShowGpuTemperature { get; set; } = true;
@@ -42,6 +44,11 @@ public sealed class AppSettings
     public void Normalize()
     {
         SchemaVersion = CurrentSchemaVersion;
+        if (!Enum.IsDefined(Language))
+        {
+            Language = AppLanguageDefaults.Detect();
+        }
+
         if (!AllowedIntervals.Contains(UpdateIntervalMilliseconds))
         {
             UpdateIntervalMilliseconds = 1000;
@@ -65,6 +72,7 @@ public sealed class AppSettings
     public AppSettings Clone() => new()
     {
         SchemaVersion = SchemaVersion,
+        Language = Language,
         ShowCpuTemperature = ShowCpuTemperature,
         ShowCpuUsage = ShowCpuUsage,
         ShowGpuTemperature = ShowGpuTemperature,

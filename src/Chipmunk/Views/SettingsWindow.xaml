@@ -1,7 +1,7 @@
 <Window x:Class="Chipmunk.Views.SettingsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Chipmunk 설정"
+        Title="{DynamicResource SettingsWindowTitle}"
         Icon="/Chipmunk;component/Assets/chipmunk.ico"
         Width="650"
         Height="760"
@@ -36,24 +36,24 @@
                        TextWrapping="Wrap" />
             <DockPanel>
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                    <Button Content="기본값 불러오기"
+                    <Button Content="{DynamicResource SettingsRestoreDefaults}"
                             Padding="12,6"
                             Margin="0,0,8,0"
                             Command="{Binding RestoreDefaultsCommand}" />
-                    <Button Content="설정 내보내기"
+                    <Button Content="{DynamicResource SettingsExport}"
                             Padding="12,6"
                             Margin="0,0,8,0"
                             Click="OnExportClick" />
-                    <Button Content="위치 초기화"
+                    <Button Content="{DynamicResource SettingsResetPosition}"
                             Padding="12,6"
                             Click="OnResetPositionClick" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Content="취소"
+                    <Button Content="{DynamicResource CommonCancel}"
                             Padding="16,6"
                             Margin="0,0,8,0"
                             Command="{Binding CancelCommand}" />
-                    <Button Content="적용"
+                    <Button Content="{DynamicResource CommonApply}"
                             Padding="18,6"
                             IsDefault="True"
                             Command="{Binding SaveCommand}" />
@@ -70,30 +70,45 @@
                     <Image Source="/Chipmunk;component/Assets/chipmunk_logo.png"
                            Stretch="UniformToFill" />
                 </Border>
-                <TextBlock Text="센서를 읽을 수 없는 항목은 N/A로 표시됩니다."
+                <TextBlock Text="{DynamicResource SensorUnavailableNote}"
                            Foreground="{DynamicResource SubtleForegroundBrush}"
                            Margin="0,0,0,16" />
 
-                <GroupBox Header="표시 항목">
+                <GroupBox Header="{DynamicResource GroupLanguage}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="170" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{DynamicResource LanguageLabel}" />
+                        <ComboBox Grid.Column="1"
+                                  ItemsSource="{Binding LanguageOptions}"
+                                  DisplayMemberPath="DisplayName"
+                                  SelectedValuePath="Value"
+                                  SelectedValue="{Binding SelectedLanguage, Mode=TwoWay}" />
+                    </Grid>
+                </GroupBox>
+
+                <GroupBox Header="{DynamicResource GroupDisplayedItems}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0">
-                            <CheckBox Content="CPU 온도" IsChecked="{Binding Draft.ShowCpuTemperature}" />
-                            <CheckBox Content="CPU 사용률" IsChecked="{Binding Draft.ShowCpuUsage}" />
-                            <CheckBox Content="GPU 온도" IsChecked="{Binding Draft.ShowGpuTemperature}" />
+                            <CheckBox Content="{DynamicResource ShowCpuTemperature}" IsChecked="{Binding Draft.ShowCpuTemperature}" />
+                            <CheckBox Content="{DynamicResource ShowCpuUsage}" IsChecked="{Binding Draft.ShowCpuUsage}" />
+                            <CheckBox Content="{DynamicResource ShowGpuTemperature}" IsChecked="{Binding Draft.ShowGpuTemperature}" />
                         </StackPanel>
                         <StackPanel Grid.Column="1">
-                            <CheckBox Content="GPU 사용률" IsChecked="{Binding Draft.ShowGpuUsage}" />
-                            <CheckBox Content="GPU 메모리" IsChecked="{Binding Draft.ShowGpuMemory}" />
-                            <CheckBox Content="시스템 메모리" IsChecked="{Binding Draft.ShowSystemMemory}" />
+                            <CheckBox Content="{DynamicResource ShowGpuUsage}" IsChecked="{Binding Draft.ShowGpuUsage}" />
+                            <CheckBox Content="{DynamicResource ShowGpuMemory}" IsChecked="{Binding Draft.ShowGpuMemory}" />
+                            <CheckBox Content="{DynamicResource ShowSystemMemory}" IsChecked="{Binding Draft.ShowSystemMemory}" />
                         </StackPanel>
                     </Grid>
                 </GroupBox>
 
-                <GroupBox Header="센서 및 갱신">
+                <GroupBox Header="{DynamicResource GroupSensorsRefresh}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="170" />
@@ -105,20 +120,24 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" Text="표시 GPU" Margin="0,5" />
+                        <TextBlock Grid.Row="0" Text="{DynamicResource DisplayGpu}" Margin="0,5" />
                         <ComboBox Grid.Row="0" Grid.Column="1"
                                   ItemsSource="{Binding GpuOptions}"
                                   SelectedItem="{Binding SelectedGpu}"
                                   DisplayMemberPath="DisplayName" />
-                        <TextBlock Grid.Row="1" Text="갱신 주기" Margin="0,10,0,5" />
+                        <TextBlock Grid.Row="1" Text="{DynamicResource UpdateInterval}" Margin="0,10,0,5" />
                         <ComboBox Grid.Row="1" Grid.Column="1" Margin="0,5,0,0"
                                   ItemsSource="{Binding UpdateIntervals}"
-                                  SelectedItem="{Binding Draft.UpdateIntervalMilliseconds}" />
-                        <TextBlock Grid.Row="2" Text="온도 단위" Margin="0,10,0,5" />
+                                  DisplayMemberPath="DisplayName"
+                                  SelectedValuePath="Value"
+                                  SelectedValue="{Binding Draft.UpdateIntervalMilliseconds, Mode=TwoWay}" />
+                        <TextBlock Grid.Row="2" Text="{DynamicResource TemperatureUnitLabel}" Margin="0,10,0,5" />
                         <ComboBox Grid.Row="2" Grid.Column="1" Margin="0,5,0,0"
                                   ItemsSource="{Binding TemperatureUnits}"
-                                  SelectedItem="{Binding Draft.TemperatureUnit}" />
-                        <TextBlock Grid.Row="3" Text="소수점 자릿수" Margin="0,10,0,5" />
+                                  DisplayMemberPath="DisplayName"
+                                  SelectedValuePath="Value"
+                                  SelectedValue="{Binding Draft.TemperatureUnit, Mode=TwoWay}" />
+                        <TextBlock Grid.Row="3" Text="{DynamicResource DecimalDigits}" Margin="0,10,0,5" />
                         <Slider Grid.Row="3" Grid.Column="1" Margin="0,8,0,0"
                                 Minimum="0" Maximum="2" TickFrequency="1"
                                 IsSnapToTickEnabled="True"
@@ -126,7 +145,7 @@
                     </Grid>
                 </GroupBox>
 
-                <GroupBox Header="경고 임계값">
+                <GroupBox Header="{DynamicResource GroupThresholds}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="170" />
@@ -139,22 +158,22 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" Text="온도 주의 (°C)" />
+                        <TextBlock Grid.Row="0" Text="{DynamicResource TemperatureWarning}" />
                         <Slider Grid.Row="0" Grid.Column="1" Minimum="40" Maximum="100"
                                 Value="{Binding Draft.Thresholds.TemperatureWarning}" />
                         <TextBlock Grid.Row="0" Grid.Column="2"
                                    Text="{Binding Draft.Thresholds.TemperatureWarning, StringFormat={}{0:F0}}" />
-                        <TextBlock Grid.Row="1" Text="온도 위험 (°C)" Margin="0,10,0,0" />
+                        <TextBlock Grid.Row="1" Text="{DynamicResource TemperatureCritical}" Margin="0,10,0,0" />
                         <Slider Grid.Row="1" Grid.Column="1" Minimum="50" Maximum="120" Margin="0,10,0,0"
                                 Value="{Binding Draft.Thresholds.TemperatureCritical}" />
                         <TextBlock Grid.Row="1" Grid.Column="2" Margin="0,10,0,0"
                                    Text="{Binding Draft.Thresholds.TemperatureCritical, StringFormat={}{0:F0}}" />
-                        <TextBlock Grid.Row="2" Text="사용률 주의 (%)" Margin="0,10,0,0" />
+                        <TextBlock Grid.Row="2" Text="{DynamicResource UsageWarning}" Margin="0,10,0,0" />
                         <Slider Grid.Row="2" Grid.Column="1" Minimum="40" Maximum="100" Margin="0,10,0,0"
                                 Value="{Binding Draft.Thresholds.UsageWarning}" />
                         <TextBlock Grid.Row="2" Grid.Column="2" Margin="0,10,0,0"
                                    Text="{Binding Draft.Thresholds.UsageWarning, StringFormat={}{0:F0}}" />
-                        <TextBlock Grid.Row="3" Text="사용률 위험 (%)" Margin="0,10,0,0" />
+                        <TextBlock Grid.Row="3" Text="{DynamicResource UsageCritical}" Margin="0,10,0,0" />
                         <Slider Grid.Row="3" Grid.Column="1" Minimum="50" Maximum="100" Margin="0,10,0,0"
                                 Value="{Binding Draft.Thresholds.UsageCritical}" />
                         <TextBlock Grid.Row="3" Grid.Column="2" Margin="0,10,0,0"
@@ -162,7 +181,7 @@
                     </Grid>
                 </GroupBox>
 
-                <GroupBox Header="모양">
+                <GroupBox Header="{DynamicResource GroupAppearance}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="170" />
@@ -175,28 +194,32 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" Text="글꼴 크기" />
+                        <TextBlock Grid.Row="0" Text="{DynamicResource FontSizeLabel}" />
                         <Slider Grid.Row="0" Grid.Column="1" Minimum="9" Maximum="30"
                                 Value="{Binding Draft.FontSize}" />
                         <TextBlock Grid.Row="0" Grid.Column="2"
                                    Text="{Binding Draft.FontSize, StringFormat={}{0:F0}}" />
-                        <TextBlock Grid.Row="1" Text="배경 불투명도" Margin="0,10,0,0" />
+                        <TextBlock Grid.Row="1" Text="{DynamicResource BackgroundOpacityLabel}" Margin="0,10,0,0" />
                         <Slider Grid.Row="1" Grid.Column="1" Minimum="0.2" Maximum="1" Margin="0,10,0,0"
                                 Value="{Binding Draft.BackgroundOpacity}" />
                         <TextBlock Grid.Row="1" Grid.Column="2" Margin="0,10,0,0"
                                    Text="{Binding Draft.BackgroundOpacity, StringFormat={}{0:P0}}" />
-                        <TextBlock Grid.Row="2" Text="레이아웃" Margin="0,10,0,0" />
+                        <TextBlock Grid.Row="2" Text="{DynamicResource LayoutLabel}" Margin="0,10,0,0" />
                         <ComboBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,7,0,0"
                                   ItemsSource="{Binding Layouts}"
-                                  SelectedItem="{Binding Draft.Layout}" />
-                        <TextBlock Grid.Row="3" Text="테마" Margin="0,10,0,0" />
+                                  DisplayMemberPath="DisplayName"
+                                  SelectedValuePath="Value"
+                                  SelectedValue="{Binding Draft.Layout, Mode=TwoWay}" />
+                        <TextBlock Grid.Row="3" Text="{DynamicResource ThemeLabel}" Margin="0,10,0,0" />
                         <ComboBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,7,0,0"
                                   ItemsSource="{Binding Themes}"
-                                  SelectedItem="{Binding Draft.Theme}" />
+                                  DisplayMemberPath="DisplayName"
+                                  SelectedValuePath="Value"
+                                  SelectedValue="{Binding Draft.Theme, Mode=TwoWay}" />
                     </Grid>
                 </GroupBox>
 
-                <GroupBox Header="위치 및 동작">
+                <GroupBox Header="{DynamicResource GroupPositionBehavior}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="170" />
@@ -213,38 +236,40 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" Text="표시 모니터" />
+                        <TextBlock Grid.Row="0" Text="{DynamicResource DisplayMonitor}" />
                         <ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"
                                   ItemsSource="{Binding MonitorOptions}"
                                   DisplayMemberPath="DisplayName"
                                   SelectedValuePath="DeviceName"
                                   SelectedValue="{Binding Draft.MonitorDeviceName}" />
-                        <TextBlock Grid.Row="1" Text="작업표시줄 여백" Margin="0,10,0,0" />
+                        <TextBlock Grid.Row="1" Text="{DynamicResource TaskbarMargin}" Margin="0,10,0,0" />
                         <Slider Grid.Row="1" Grid.Column="1" Minimum="0" Maximum="50" Margin="0,10,0,0"
                                 Value="{Binding Draft.TaskbarMargin}" />
                         <TextBlock Grid.Row="1" Grid.Column="2" Margin="0,10,0,0"
                                    Text="{Binding Draft.TaskbarMargin, StringFormat={}{0:F0}px}" />
                         <CheckBox Grid.Row="2" Grid.ColumnSpan="3" Margin="0,10,0,0"
-                                  Content="Windows 시작 시 자동 실행"
+                                  Content="{DynamicResource StartWithWindows}"
                                   IsChecked="{Binding Draft.StartWithWindows}" />
                         <CheckBox Grid.Row="3" Grid.ColumnSpan="3"
-                                  Content="항상 위에 표시"
+                                  Content="{DynamicResource AlwaysOnTop}"
                                   IsChecked="{Binding Draft.AlwaysOnTop}" />
                         <CheckBox Grid.Row="4" Grid.ColumnSpan="3"
-                                  Content="클릭 통과 모드"
+                                  Content="{DynamicResource ClickThroughMode}"
                                   IsChecked="{Binding Draft.ClickThrough}" />
-                        <TextBlock Grid.Row="5" Text="더블 클릭 동작" Margin="0,10,0,0" />
+                        <TextBlock Grid.Row="5" Text="{DynamicResource DoubleClickActionLabel}" Margin="0,10,0,0" />
                         <ComboBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,7,0,0"
                                   ItemsSource="{Binding DoubleClickActions}"
-                                  SelectedItem="{Binding Draft.DoubleClickAction}" />
+                                  DisplayMemberPath="DisplayName"
+                                  SelectedValuePath="Value"
+                                  SelectedValue="{Binding Draft.DoubleClickAction, Mode=TwoWay}" />
                         <CheckBox Grid.Row="6" Grid.ColumnSpan="3"
-                                  Content="PawnIO 설치 안내를 다시 표시하지 않음"
+                                  Content="{DynamicResource SuppressPawnIoPrompt}"
                                   IsChecked="{Binding Draft.SuppressPawnIoInstallPrompt}" />
                         <TextBlock Grid.Row="7" Grid.ColumnSpan="3"
                                    Margin="0,12,0,0"
                                    Foreground="{DynamicResource SubtleForegroundBrush}"
                                    TextWrapping="Wrap"
-                                   Text="클릭 통과 모드에서는 위젯이 마우스 입력을 받지 않습니다. 시스템 트레이 메뉴에서 해제할 수 있습니다." />
+                                   Text="{DynamicResource ClickThroughNote}" />
                     </Grid>
                 </GroupBox>
             </StackPanel>

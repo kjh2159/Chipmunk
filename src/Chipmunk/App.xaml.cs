@@ -18,6 +18,7 @@ public partial class App : System.Windows.Application
     private ISettingsService? _settings;
     private IStartupService? _startup;
     private IThemeService? _theme;
+    private readonly ILocalizationService _localization = new LocalizationService();
     private IWindowPositionService? _position;
     private IHardwareMonitoringService? _monitoring;
     private IPawnIoService? _pawnIo;
@@ -62,8 +63,9 @@ public partial class App : System.Windows.Application
             };
             _pawnIo = new PawnIoService(_logger);
 
+            _localization.Apply(_settings.Current.Language);
             _theme.Apply(_settings.Current.Theme);
-            _widgetViewModel = new WidgetViewModel(_monitoring, _settings);
+            _widgetViewModel = new WidgetViewModel(_monitoring, _settings, _localization);
             _widget = new WidgetWindow(
                 _widgetViewModel,
                 _position,
@@ -77,6 +79,7 @@ public partial class App : System.Windows.Application
             }
 
             _tray = new TrayIconService(
+                _localization,
                 ToggleWidget,
                 ShowSettings,
                 ShowDetails,
@@ -96,14 +99,14 @@ public partial class App : System.Windows.Application
             SystemEvents.PowerModeChanged += OnPowerModeChanged;
 
             await _monitoring.StartAsync(_applicationCancellation.Token);
-            _logger.Info("Chipmunk가 시작되었습니다.");
+            _logger.Info("Chipmunk started.");
         }
         catch (Exception exception)
         {
-            _logger.Error("startup", "애플리케이션을 초기화하지 못했습니다.", exception);
+            _logger.Error("startup", "The application could not be initialized.", exception);
             System.Windows.MessageBox.Show(
-                $"Chipmunk를 시작하지 못했습니다.{Environment.NewLine}{exception.Message}",
-                "시작 오류",
+                _localization.Format("StartupErrorMessage", exception.Message),
+                _localization.Get("StartupErrorTitle"),
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
             Shutdown();
@@ -112,6 +115,13 @@ public partial class App : System.Windows.Application
 
     private void OnSettingsChanged(AppSettings settings)
     {
+        if (!Dispatcher.CheckAccess())
+        {
+            _ = Dispatcher.BeginInvoke(() => OnSettingsChanged(settings));
+            return;
+        }
+
+        _localization.Apply(settings.Language);
         if (_monitoring is not null)
         {
             _monitoring.UpdateInterval = TimeSpan.FromMilliseconds(settings.UpdateIntervalMilliseconds);
@@ -161,8 +171,13 @@ public partial class App : System.Windows.Application
             return;
         }
 
-        var viewModel = new SettingsViewModel(_settings, _startup, _monitoring, _position);
-        _settingsWindow = new SettingsWindow(viewModel);
+        var viewModel = new SettingsViewModel(
+            _settings,
+            _startup,
+            _monitoring,
+            _position,
+            _localization);
+        _settingsWindow = new SettingsWindow(viewModel, _localization);
         _settingsWindow.Closed += (_, _) => _settingsWindow = null;
         _settingsWindow.Show();
         _settingsWindow.Activate();
@@ -201,7 +216,7 @@ public partial class App : System.Windows.Application
         }
         catch (Exception exception)
         {
-            _logger?.Error("task-manager", "작업 관리자를 실행하지 못했습니다.", exception);
+            _logger?.Error("task-manager", "Windows Task Manager could not be started.", exception);
         }
     }
 
@@ -279,17 +294,16 @@ public partial class App : System.Windows.Application
         {
             case PawnIoInstallOutcome.Installed:
                 System.Windows.MessageBox.Show(
-                    "PawnIO 설치가 완료되었습니다.\n" +
-                    "프로그램을 종료한 뒤 다시 실행하면 CPU 센서가 새 드라이버로 초기화됩니다.",
-                    "PawnIO 설치 완료",
+                    _localization.Get("PawnIoInstalledMessage"),
+                    _localization.Get("PawnIoInstalledTitle"),
                     MessageBoxButton.OK,
                     MessageBoxImage.Information);
                 break;
 
             case PawnIoInstallOutcome.RebootRequired:
                 System.Windows.MessageBox.Show(
-                    "PawnIO 설치가 완료되었으며 Windows 재시작이 필요합니다.",
-                    "재시작 필요",
+                    _localization.Get("PawnIoRebootMessage"),
+                    _localization.Get("PawnIoRebootTitle"),
                     MessageBoxButton.OK,
                     MessageBoxImage.Information);
                 break;
@@ -299,25 +313,26 @@ public partial class App : System.Windows.Application
 
             case PawnIoInstallOutcome.InstallerMissing:
                 System.Windows.MessageBox.Show(
-                    "공식 PawnIO 설치 파일이 배포 폴더에 없습니다.\n" +
-                    "Dependencies 폴더를 포함한 전체 배포본으로 다시 실행해 주세요.",
-                    "PawnIO 설치 파일 없음",
+                    _localization.Get("PawnIoMissingMessage"),
+                    _localization.Get("PawnIoMissingTitle"),
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);
                 break;
 
             case PawnIoInstallOutcome.VerificationFailed:
                 System.Windows.MessageBox.Show(
-                    "PawnIO 설치 파일의 SHA-256이 공식 고정값과 다르므로 실행하지 않았습니다.",
-                    "PawnIO 무결성 검증 실패",
+                    _localization.Get("PawnIoVerificationMessage"),
+                    _localization.Get("PawnIoVerificationTitle"),
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
                 break;
 
             default:
                 System.Windows.MessageBox.Show(
-                    result.ErrorMessage ?? "PawnIO 설치에 실패했습니다.",
-                    "PawnIO 설치 실패",
+                    _localization.Format(
+                        "PawnIoFailedMessage",
+                        result.ExitCode?.ToString() ?? "N/A"),
+                    _localization.Get("PawnIoFailedTitle"),
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
                 break;
@@ -360,7 +375,7 @@ public partial class App : System.Windows.Application
         }
         catch (Exception exception)
         {
-            _logger?.Error("settings-save", "설정을 저장하지 못했습니다.", exception);
+            _logger?.Error("settings-save", "Settings could not be saved.", exception);
         }
     }
 
@@ -453,7 +468,7 @@ public partial class App : System.Windows.Application
         object sender,
         DispatcherUnhandledExceptionEventArgs e)
     {
-        _logger?.Error("dispatcher-unhandled", "UI 처리 중 복구 가능한 오류가 발생했습니다.", e.Exception);
+        _logger?.Error("dispatcher-unhandled", "A recoverable UI error occurred.", e.Exception);
         if (e.Exception is not (OutOfMemoryException or StackOverflowException))
         {
             e.Handled = true;
@@ -464,13 +479,13 @@ public partial class App : System.Windows.Application
     {
         if (e.ExceptionObject is Exception exception)
         {
-            _logger?.Error("domain-unhandled", "처리되지 않은 오류가 발생했습니다.", exception);
+            _logger?.Error("domain-unhandled", "An unhandled application error occurred.", exception);
         }
     }
 
     private void OnUnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
     {
-        _logger?.Error("task-unobserved", "백그라운드 작업 오류가 관찰되지 않았습니다.", e.Exception);
+        _logger?.Error("task-unobserved", "An unobserved background task error occurred.", e.Exception);
         e.SetObserved();
     }
 
@@ -502,13 +517,13 @@ public partial class App : System.Windows.Application
             }
             catch (Exception exception)
             {
-                _logger?.Error("monitor-dispose", "센서 서비스를 종료하지 못했습니다.", exception);
+                _logger?.Error("monitor-dispose", "The sensor service could not be disposed.", exception);
             }
         }
 
         _singleInstance?.Dispose();
         _applicationCancellation.Dispose();
-        _logger?.Info("Chipmunk가 종료되었습니다.");
+        _logger?.Info("Chipmunk stopped.");
         _logger?.Dispose();
         base.OnExit(e);
     }

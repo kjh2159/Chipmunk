@@ -1,5 +1,6 @@
 using Microsoft.Win32;
 using System.Windows;
+using Chipmunk.Services;
 using Chipmunk.ViewModels;
 
 namespace Chipmunk.Views;
@@ -7,28 +8,35 @@ namespace Chipmunk.Views;
 public partial class SettingsWindow : Window
 {
     private readonly SettingsViewModel _viewModel;
+    private readonly ILocalizationService _localization;
 
-    public SettingsWindow(SettingsViewModel viewModel)
+    public SettingsWindow(SettingsViewModel viewModel, ILocalizationService localization)
     {
         InitializeComponent();
         _viewModel = viewModel;
+        _localization = localization;
         DataContext = viewModel;
         _viewModel.CloseRequested += OnCloseRequested;
-        Closed += (_, _) => _viewModel.CloseRequested -= OnCloseRequested;
+        Closed += OnClosed;
     }
 
     private void OnCloseRequested(bool saved)
     {
-        DialogResult = saved;
         Close();
+    }
+
+    private void OnClosed(object? sender, EventArgs e)
+    {
+        _viewModel.CloseRequested -= OnCloseRequested;
+        _viewModel.Dispose();
     }
 
     private async void OnExportClick(object sender, RoutedEventArgs e)
     {
         var dialog = new Microsoft.Win32.SaveFileDialog
         {
-            Title = "설정 내보내기",
-            Filter = "JSON 파일 (*.json)|*.json|모든 파일 (*.*)|*.*",
+            Title = _localization.Get("ExportDialogTitle"),
+            Filter = _localization.Get("ExportJsonFilter"),
             FileName = "Chipmunk.settings.json",
             AddExtension = true,
             DefaultExt = ".json"
@@ -43,6 +51,6 @@ public partial class SettingsWindow : Window
     private void OnResetPositionClick(object sender, RoutedEventArgs e)
     {
         _viewModel.Draft.HasCustomPosition = false;
-        _viewModel.ErrorMessage = "위치를 기본값으로 설정했습니다. 적용을 눌러 저장하세요.";
+        _viewModel.ErrorMessage = _localization.Get("SettingsPositionReset");
     }
 }

@@ -1,7 +1,7 @@
 <Window x:Class="Chipmunk.Views.DetailedMonitorWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Chipmunk 상세 시스템 모니터"
+        Title="{DynamicResource DetailedWindowTitle}"
         Icon="/Chipmunk;component/Assets/chipmunk.ico"
         Width="620"
         Height="330"
@@ -15,7 +15,7 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBlock Text="실시간 시스템 상태"
+        <TextBlock Text="{DynamicResource DetailedHeader}"
                    FontSize="22"
                    FontWeight="SemiBold"
                    Margin="0,0,0,18" />
@@ -38,6 +38,6 @@
         <TextBlock Grid.Row="2"
                    Margin="0,14,0,0"
                    Foreground="{DynamicResource SubtleForegroundBrush}"
-                   Text="센서 선택과 경고 임계값은 설정 창에서 변경할 수 있습니다." />
+                   Text="{DynamicResource DetailedFooter}" />
     </Grid>
 </Window>

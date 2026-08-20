@@ -16,6 +16,7 @@ public sealed class SettingsServiceTests
             FontSize = 17,
             UpdateIntervalMilliseconds = 2000,
             TemperatureUnit = TemperatureUnit.Fahrenheit,
+            Language = AppLanguage.Japanese,
             SelectedGpuId = "gpu-1",
             SuppressPawnIoInstallPrompt = true
         };
@@ -27,8 +28,26 @@ public sealed class SettingsServiceTests
         Assert.Equal(17, result.FontSize);
         Assert.Equal(2000, result.UpdateIntervalMilliseconds);
         Assert.Equal(TemperatureUnit.Fahrenheit, result.TemperatureUnit);
+        Assert.Equal(AppLanguage.Japanese, result.Language);
         Assert.Equal("gpu-1", result.SelectedGpuId);
         Assert.True(result.SuppressPawnIoInstallPrompt);
+    }
+
+    [Fact]
+    public async Task LegacySettingsWithoutLanguage_UseTheSystemLanguageDefault()
+    {
+        using var environment = new TestEnvironment();
+        Directory.CreateDirectory(environment.SettingsDirectory);
+        await File.WriteAllTextAsync(
+            Path.Combine(environment.SettingsDirectory, "settings.json"),
+            """{"SchemaVersion":1,"FontSize":15}""");
+        using var logger = new RateLimitedFileLogger(environment.LogDirectory);
+        var service = new SettingsService(logger, environment.SettingsDirectory);
+
+        var result = await service.LoadAsync();
+
+        Assert.Equal(AppLanguageDefaults.Detect(), result.Language);
+        Assert.Equal(AppSettings.CurrentSchemaVersion, result.SchemaVersion);
     }
 
     [Fact]

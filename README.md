@@ -31,11 +31,11 @@ It is designed to remain visible without interrupting normal desktop usage.
 
 - Real-Time Hardware Monitoring
 - Taskbar Overlay Widget
-- Customizable Display Settings
+- Customizable Display Settings and Language
 - System Tray and Click-Through Mode
 - Safe Sensor Access
 
-> This program supports Korean only for now. However, I plan to extend the language support to multiple languages.
+The interface can be changed at runtime between English, Korean, Japanese, Simplified Chinese, and Spanish. Open **Settings → Language**, select a language, and choose **Apply**; no restart is required.
 
 ## Example
 <p align="center">

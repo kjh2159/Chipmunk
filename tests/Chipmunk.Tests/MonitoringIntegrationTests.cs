@@ -33,7 +33,7 @@ public sealed class MonitoringIntegrationTests
         var settings = new SettingsService(logger, environment.SettingsDirectory);
         await settings.LoadAsync();
         await using var monitoring = new ManualMonitoringService();
-        using var viewModel = new WidgetViewModel(monitoring, settings);
+        using var viewModel = new WidgetViewModel(monitoring, settings, new LocalizationService());
         monitoring.Publish(new MonitoringSnapshot(
             DateTimeOffset.Now,
             50,
@@ -59,7 +59,7 @@ public sealed class MonitoringIntegrationTests
         var settings = new SettingsService(logger, environment.SettingsDirectory);
         await settings.LoadAsync();
         await using var monitoring = new ManualMonitoringService();
-        using var viewModel = new WidgetViewModel(monitoring, settings);
+        using var viewModel = new WidgetViewModel(monitoring, settings, new LocalizationService());
 
         monitoring.Publish(new MonitoringSnapshot(
             DateTimeOffset.Now,

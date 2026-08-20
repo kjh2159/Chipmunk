@@ -8,10 +8,11 @@ public sealed partial class WidgetViewModel : ObservableObject, IDisposable
 {
     private readonly IHardwareMonitoringService _monitoringService;
     private readonly ISettingsService _settingsService;
+    private readonly ILocalizationService _localization;
     private MonitoringSnapshot _lastSnapshot = MonitoringSnapshot.Empty;
 
     [ObservableProperty]
-    private string _displayText = "센서 검색 중…";
+    private string _displayText = "Chipmunk";
 
     [ObservableProperty]
     private string _toolTipText = "Chipmunk";
@@ -33,12 +34,16 @@ public sealed partial class WidgetViewModel : ObservableObject, IDisposable
 
     public WidgetViewModel(
         IHardwareMonitoringService monitoringService,
-        ISettingsService settingsService)
+        ISettingsService settingsService,
+        ILocalizationService localization)
     {
         _monitoringService = monitoringService;
         _settingsService = settingsService;
+        _localization = localization;
+        DisplayText = localization.Get("WidgetSensorSearching");
         _monitoringService.SnapshotUpdated += OnSnapshotUpdated;
         _settingsService.SettingsChanged += OnSettingsChanged;
+        _localization.LanguageChanged += OnLanguageChanged;
         ApplySettings(_settingsService.Current);
     }
 
@@ -71,6 +76,19 @@ public sealed partial class WidgetViewModel : ObservableObject, IDisposable
         else
         {
             ApplySettings(settings);
+            ApplySnapshot(_lastSnapshot);
+        }
+    }
+
+    private void OnLanguageChanged(AppLanguage language)
+    {
+        var dispatcher = System.Windows.Application.Current?.Dispatcher;
+        if (dispatcher is not null && !dispatcher.CheckAccess())
+        {
+            _ = dispatcher.InvokeAsync(() => ApplySnapshot(_lastSnapshot));
+        }
+        else
+        {
             ApplySnapshot(_lastSnapshot);
         }
     }
@@ -153,7 +171,7 @@ public sealed partial class WidgetViewModel : ObservableObject, IDisposable
 
         if (sections.Count == 0)
         {
-            DisplayText = "설정에서 표시할 센서를 선택하세요.";
+            DisplayText = _localization.Get("WidgetNoSensorsSelected");
         }
         else if (settings.Layout == WidgetLayout.OneLine || sections.Count == 1)
         {
@@ -171,8 +189,17 @@ public sealed partial class WidgetViewModel : ObservableObject, IDisposable
         OverallSeverity = severities.Count == 0
             ? Severity.Unavailable
             : SeverityClassifier.Maximum(severities.ToArray());
-        ToolTipText = $"{gpu?.Name ?? "GPU 센서 없음"} · 갱신 {snapshot.Timestamp:HH:mm:ss}" +
-                      (snapshot.LastError is null ? string.Empty : $"{Environment.NewLine}{snapshot.LastError}");
+        var timestamp = snapshot.Timestamp == DateTimeOffset.MinValue
+            ? "--:--:--"
+            : snapshot.Timestamp.ToString("T");
+        ToolTipText = _localization.Format(
+            "WidgetUpdated",
+            gpu?.Name ?? _localization.Get("WidgetGpuUnavailable"),
+            timestamp);
+        if (snapshot.LastError is not null)
+        {
+            ToolTipText += Environment.NewLine + _localization.Get("WidgetSensorReadError");
+        }
     }
 
     private static string FormatTemperature(double? celsius, AppSettings settings)
@@ -207,5 +234,6 @@ public sealed partial class WidgetViewModel : ObservableObject, IDisposable
     {
         _monitoringService.SnapshotUpdated -= OnSnapshotUpdated;
         _settingsService.SettingsChanged -= OnSettingsChanged;
+        _localization.LanguageChanged -= OnLanguageChanged;
     }
 }

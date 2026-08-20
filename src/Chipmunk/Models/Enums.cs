@@ -1,4 +1,33 @@
+using System.Globalization;
+
 namespace Chipmunk.Models;
+
+public enum AppLanguage
+{
+    English,
+    Korean,
+    Japanese,
+    ChineseSimplified,
+    Spanish
+}
+
+public static class AppLanguageDefaults
+{
+    public static AppLanguage Detect(CultureInfo? culture = null)
+    {
+        var language = (culture ?? CultureInfo.InstalledUICulture)
+            .TwoLetterISOLanguageName
+            .ToLowerInvariant();
+        return language switch
+        {
+            "ko" => AppLanguage.Korean,
+            "ja" => AppLanguage.Japanese,
+            "zh" => AppLanguage.ChineseSimplified,
+            "es" => AppLanguage.Spanish,
+            _ => AppLanguage.English
+        };
+    }
+}
 
 public enum HardwareKind
 {

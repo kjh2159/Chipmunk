@@ -7,8 +7,14 @@ public sealed class TrayIconService : IDisposable
 {
     private readonly Forms.NotifyIcon _notifyIcon;
     private readonly Icon _applicationIcon;
+    private readonly ILocalizationService _localization;
     private readonly Forms.ToolStripMenuItem _showItem;
     private readonly Forms.ToolStripMenuItem _clickThroughItem;
+    private readonly Forms.ToolStripMenuItem _settingsItem;
+    private readonly Forms.ToolStripMenuItem _detailsItem;
+    private readonly Forms.ToolStripMenuItem _rescanItem;
+    private readonly Forms.ToolStripMenuItem _resetPositionItem;
+    private readonly Forms.ToolStripMenuItem _exitItem;
     private readonly Action _showOrHide;
     private readonly Action _showSettings;
     private readonly Action _showDetails;
@@ -16,8 +22,10 @@ public sealed class TrayIconService : IDisposable
     private readonly Func<bool, Task> _setClickThrough;
     private readonly Func<Task> _resetPosition;
     private readonly Func<Task> _exit;
+    private bool _widgetVisible = true;
 
     public TrayIconService(
+        ILocalizationService localization,
         Action showOrHide,
         Action showSettings,
         Action showDetails,
@@ -26,6 +34,7 @@ public sealed class TrayIconService : IDisposable
         Func<Task> resetPosition,
         Func<Task> exit)
     {
+        _localization = localization;
         _showOrHide = showOrHide;
         _showSettings = showSettings;
         _showDetails = showDetails;
@@ -34,40 +43,43 @@ public sealed class TrayIconService : IDisposable
         _resetPosition = resetPosition;
         _exit = exit;
 
-        _showItem = new Forms.ToolStripMenuItem("위젯 숨기기");
+        _showItem = new Forms.ToolStripMenuItem();
         _showItem.Click += (_, _) => _showOrHide();
 
-        _clickThroughItem = new Forms.ToolStripMenuItem("클릭 통과 모드")
+        _clickThroughItem = new Forms.ToolStripMenuItem()
         {
             CheckOnClick = true
         };
         _clickThroughItem.Click += async (_, _) =>
             await _setClickThrough(_clickThroughItem.Checked);
 
-        var settingsItem = new Forms.ToolStripMenuItem("설정");
-        settingsItem.Click += (_, _) => _showSettings();
-        var detailsItem = new Forms.ToolStripMenuItem("상세 모니터");
-        detailsItem.Click += (_, _) => _showDetails();
-        var rescanItem = new Forms.ToolStripMenuItem("센서 새로 검색");
-        rescanItem.Click += async (_, _) => await _rescan();
-        var resetPositionItem = new Forms.ToolStripMenuItem("기본 위치로 복원");
-        resetPositionItem.Click += async (_, _) => await _resetPosition();
-        var exitItem = new Forms.ToolStripMenuItem("프로그램 종료");
-        exitItem.Click += async (_, _) => await _exit();
+        _settingsItem = new Forms.ToolStripMenuItem();
+        _settingsItem.Click += (_, _) => _showSettings();
+        _detailsItem = new Forms.ToolStripMenuItem();
+        _detailsItem.Click += (_, _) => _showDetails();
+        _rescanItem = new Forms.ToolStripMenuItem();
+        _rescanItem.Click += async (_, _) => await _rescan();
+        _resetPositionItem = new Forms.ToolStripMenuItem();
+        _resetPositionItem.Click += async (_, _) => await _resetPosition();
+        _exitItem = new Forms.ToolStripMenuItem();
+        _exitItem.Click += async (_, _) => await _exit();
 
         var menu = new Forms.ContextMenuStrip();
         menu.Items.AddRange(
         [
             _showItem,
-            detailsItem,
-            settingsItem,
+            _detailsItem,
+            _settingsItem,
             new Forms.ToolStripSeparator(),
-            rescanItem,
+            _rescanItem,
             _clickThroughItem,
-            resetPositionItem,
+            _resetPositionItem,
             new Forms.ToolStripSeparator(),
-            exitItem
+            _exitItem
         ]);
+
+        RefreshTexts();
+        _localization.LanguageChanged += OnLanguageChanged;
 
         _applicationIcon = LoadApplicationIcon();
         _notifyIcon = new Forms.NotifyIcon
@@ -82,7 +94,9 @@ public sealed class TrayIconService : IDisposable
 
     public void Synchronize(bool widgetVisible, bool clickThrough)
     {
-        _showItem.Text = widgetVisible ? "위젯 숨기기" : "위젯 표시";
+        _widgetVisible = widgetVisible;
+        _showItem.Text = _localization.Get(
+            widgetVisible ? "TrayHideWidget" : "TrayShowWidget");
         _clickThroughItem.Checked = clickThrough;
     }
 
@@ -96,10 +110,25 @@ public sealed class TrayIconService : IDisposable
 
     public void Dispose()
     {
+        _localization.LanguageChanged -= OnLanguageChanged;
         _notifyIcon.Visible = false;
         _notifyIcon.ContextMenuStrip?.Dispose();
         _notifyIcon.Dispose();
         _applicationIcon.Dispose();
+    }
+
+    private void OnLanguageChanged(Chipmunk.Models.AppLanguage language) => RefreshTexts();
+
+    private void RefreshTexts()
+    {
+        _showItem.Text = _localization.Get(
+            _widgetVisible ? "TrayHideWidget" : "TrayShowWidget");
+        _clickThroughItem.Text = _localization.Get("ClickThroughMode");
+        _settingsItem.Text = _localization.Get("TraySettings");
+        _detailsItem.Text = _localization.Get("TrayDetailedMonitor");
+        _rescanItem.Text = _localization.Get("TrayRescanSensors");
+        _resetPositionItem.Text = _localization.Get("TrayResetPosition");
+        _exitItem.Text = _localization.Get("TrayExit");
     }
 
     private static Icon LoadApplicationIcon()
