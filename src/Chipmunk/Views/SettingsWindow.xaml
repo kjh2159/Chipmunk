@@ -15,9 +15,11 @@
         <Style TargetType="GroupBox">
             <Setter Property="Margin" Value="0,0,0,12" />
             <Setter Property="Padding" Value="12" />
+            <Setter Property="Foreground" Value="{DynamicResource WindowForegroundBrush}" />
         </Style>
         <Style TargetType="CheckBox">
             <Setter Property="Margin" Value="0,4" />
+            <Setter Property="Foreground" Value="{DynamicResource WindowForegroundBrush}" />
         </Style>
         <Style TargetType="TextBlock">
             <Setter Property="VerticalAlignment" Value="Center" />
@@ -25,6 +27,11 @@
         <Style TargetType="ComboBox">
             <Setter Property="MinWidth" Value="230" />
             <Setter Property="Height" Value="28" />
+            <Setter Property="Foreground" Value="{DynamicResource DropDownForegroundBrush}" />
+            <Setter Property="Background" Value="{DynamicResource DropDownBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}" />
+            <Setter Property="ItemContainerStyle"
+                    Value="{StaticResource DropDownComboBoxItemStyle}" />
         </Style>
     </Window.Resources>
 

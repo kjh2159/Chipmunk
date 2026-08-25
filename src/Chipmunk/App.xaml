@@ -13,6 +13,59 @@
         <SolidColorBrush x:Key="WindowForegroundBrush" Color="#FF202124" />
         <SolidColorBrush x:Key="SubtleForegroundBrush" Color="#FF6B7280" />
         <SolidColorBrush x:Key="AccentBrush" Color="#FF4BA3F2" />
+        <SolidColorBrush x:Key="ControlBackgroundBrush" Color="#FFFFFFFF" />
+        <SolidColorBrush x:Key="ControlForegroundBrush" Color="#FF202124" />
+        <SolidColorBrush x:Key="ControlBorderBrush" Color="#FFB8BDC7" />
+        <!-- The native WPF ComboBox popup remains light even in the app's dark
+             theme, so its item palette is intentionally independent. -->
+        <SolidColorBrush x:Key="DropDownBackgroundBrush" Color="#FFFFFFFF" />
+        <SolidColorBrush x:Key="DropDownForegroundBrush" Color="#FF202124" />
+        <SolidColorBrush x:Key="DropDownHighlightBrush" Color="#FFE3F0FA" />
+
+        <Style x:Key="DropDownComboBoxItemStyle"
+               TargetType="{x:Type ComboBoxItem}">
+            <Setter Property="Foreground" Value="{DynamicResource DropDownForegroundBrush}" />
+            <Setter Property="Background" Value="{DynamicResource DropDownBackgroundBrush}" />
+            <Style.Triggers>
+                <Trigger Property="IsHighlighted" Value="True">
+                    <Setter Property="Foreground" Value="{DynamicResource DropDownForegroundBrush}" />
+                    <Setter Property="Background" Value="{DynamicResource DropDownHighlightBrush}" />
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Foreground" Value="{DynamicResource DropDownForegroundBrush}" />
+                    <Setter Property="Background" Value="{DynamicResource DropDownHighlightBrush}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="{x:Type CheckBox}">
+            <Setter Property="Foreground" Value="{DynamicResource WindowForegroundBrush}" />
+        </Style>
+        <Style TargetType="{x:Type RadioButton}">
+            <Setter Property="Foreground" Value="{DynamicResource WindowForegroundBrush}" />
+        </Style>
+        <Style TargetType="{x:Type GroupBox}">
+            <Setter Property="Foreground" Value="{DynamicResource WindowForegroundBrush}" />
+        </Style>
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="Foreground" Value="{DynamicResource ControlForegroundBrush}" />
+            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}" />
+        </Style>
+        <Style TargetType="{x:Type ComboBox}">
+            <Setter Property="Foreground" Value="{DynamicResource DropDownForegroundBrush}" />
+            <Setter Property="Background" Value="{DynamicResource DropDownBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}" />
+            <Setter Property="ItemContainerStyle"
+                    Value="{StaticResource DropDownComboBoxItemStyle}" />
+        </Style>
+        <Style TargetType="{x:Type ComboBoxItem}"
+               BasedOn="{StaticResource DropDownComboBoxItemStyle}" />
+        <Style TargetType="{x:Type TextBox}">
+            <Setter Property="Foreground" Value="{DynamicResource ControlForegroundBrush}" />
+            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}" />
+        </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

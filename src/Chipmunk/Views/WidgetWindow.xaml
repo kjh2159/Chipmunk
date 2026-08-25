@@ -47,7 +47,7 @@
                        FontFamily="Segoe UI Variable Text, Segoe UI"
                        FontSize="{Binding WidgetFontSize}"
                        FontWeight="SemiBold"
-                       Foreground="{Binding OverallSeverity, Converter={StaticResource SeverityBrushConverter}}"
+                       Foreground="{DynamicResource WidgetForegroundBrush}"
                        TextWrapping="NoWrap"
                        VerticalAlignment="Center" />
         </Grid>
