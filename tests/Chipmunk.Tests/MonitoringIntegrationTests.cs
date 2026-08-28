@@ -75,6 +75,60 @@ public sealed class MonitoringIntegrationTests
     }
 
     [Fact]
+    public async Task TwoLineLayout_NeverWrapsWithinCpuGpuOrRamSections()
+    {
+        using var environment = new TestEnvironment();
+        using var logger = new RateLimitedFileLogger(environment.LogDirectory);
+        var settings = new SettingsService(logger, environment.SettingsDirectory);
+        await settings.LoadAsync();
+        var draft = settings.Current.Clone();
+        draft.Layout = WidgetLayout.TwoLines;
+        await settings.SaveAsync(draft);
+        await using var monitoring = new ManualMonitoringService();
+        using var viewModel = new WidgetViewModel(monitoring, settings, new LocalizationService());
+
+        monitoring.Publish(new MonitoringSnapshot(
+            DateTimeOffset.Now,
+            55,
+            30,
+            [new GpuReading("gpu-1", "GPU", HardwareKind.GpuNvidia, 60, 40, 4e9, 12e9)],
+            8e9,
+            16e9));
+
+        var lines = viewModel.DisplayText.Split(Environment.NewLine);
+        Assert.Equal(2, lines.Length);
+        Assert.Contains("CPU", lines[0]);
+        Assert.Contains("GPU", lines[0]);
+        Assert.DoesNotContain("RAM", lines[0]);
+        Assert.StartsWith("RAM", lines[1]);
+    }
+
+    [Fact]
+    public async Task ThreeLineLayout_RendersOneHardwareCategoryPerLine()
+    {
+        using var environment = new TestEnvironment();
+        using var logger = new RateLimitedFileLogger(environment.LogDirectory);
+        var settings = new SettingsService(logger, environment.SettingsDirectory);
+        await settings.SaveAsync(new AppSettings { Layout = WidgetLayout.ThreeLines });
+        await using var monitoring = new ManualMonitoringService();
+        using var viewModel = new WidgetViewModel(monitoring, settings, new LocalizationService());
+
+        monitoring.Publish(new MonitoringSnapshot(
+            DateTimeOffset.Now,
+            55,
+            30,
+            [new GpuReading("gpu-1", "GPU", HardwareKind.GpuNvidia, 60, 40, 4e9, 12e9)],
+            8e9,
+            16e9));
+
+        var lines = viewModel.DisplayText.Split(Environment.NewLine);
+        Assert.Equal(3, lines.Length);
+        Assert.StartsWith("CPU", lines[0]);
+        Assert.StartsWith("GPU", lines[1]);
+        Assert.StartsWith("RAM", lines[2]);
+    }
+
+    [Fact]
     public async Task ResumeRecovery_RequestsSensorRescan()
     {
         await using var monitoring = new MockHardwareMonitoringService();

@@ -64,7 +64,8 @@ public enum WidgetTheme
 public enum WidgetLayout
 {
     OneLine,
-    TwoLines
+    TwoLines,
+    ThreeLines
 }
 
 public enum Severity

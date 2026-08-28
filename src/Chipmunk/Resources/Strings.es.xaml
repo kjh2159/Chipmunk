@@ -29,6 +29,8 @@
     <sys:String x:Key="UsageCritical">Uso crítico (%)</sys:String>
     <sys:String x:Key="GroupAppearance">Apariencia</sys:String>
     <sys:String x:Key="FontSizeLabel">Tamaño de fuente</sys:String>
+    <sys:String x:Key="FixedWidgetSize">Bloquear tamaño del widget</sys:String>
+    <sys:String x:Key="FlexibleWidgetSizeNote">Al desbloquearlo, arrastre la esquina inferior derecha para cambiar el tamaño. La fuente se ajustará con el widget.</sys:String>
     <sys:String x:Key="BackgroundOpacityLabel">Opacidad del fondo</sys:String>
     <sys:String x:Key="LayoutLabel">Diseño</sys:String>
     <sys:String x:Key="ThemeLabel">Tema</sys:String>
@@ -49,6 +51,7 @@
     <sys:String x:Key="OptionFahrenheit">Fahrenheit</sys:String>
     <sys:String x:Key="OptionOneLine">Una línea</sys:String>
     <sys:String x:Key="OptionTwoLines">Dos líneas</sys:String>
+    <sys:String x:Key="OptionThreeLines">Tres líneas</sys:String>
     <sys:String x:Key="OptionSystemTheme">Sistema</sys:String>
     <sys:String x:Key="OptionDarkTheme">Oscuro</sys:String>
     <sys:String x:Key="OptionLightTheme">Claro</sys:String>

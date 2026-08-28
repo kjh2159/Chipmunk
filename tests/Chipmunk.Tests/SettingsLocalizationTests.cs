@@ -30,8 +30,37 @@ public sealed class SettingsLocalizationTests
         Assert.Equal("English:OptionSecond:1", viewModel.UpdateIntervals[1].DisplayName);
         Assert.Equal("English:OptionCelsius", viewModel.TemperatureUnits[0].DisplayName);
         Assert.Equal("English:OptionOneLine", viewModel.Layouts[0].DisplayName);
+        Assert.Equal("English:OptionThreeLines", viewModel.Layouts[2].DisplayName);
         Assert.Equal("English:OptionSystemTheme", viewModel.Themes[0].DisplayName);
         Assert.Equal("English:OptionTaskManager", viewModel.DoubleClickActions[0].DisplayName);
+    }
+
+    [Fact]
+    public async Task SavingAnotherLayout_DiscardsDimensionsMeasuredForTheOldLayout()
+    {
+        using var environment = new TestEnvironment();
+        using var logger = new RateLimitedFileLogger(environment.LogDirectory);
+        var settings = new SettingsService(logger, environment.SettingsDirectory);
+        await settings.SaveAsync(new AppSettings
+        {
+            Layout = WidgetLayout.OneLine,
+            IsWidgetSizeFixed = false,
+            HasFlexibleWidgetSize = true,
+            FlexibleWidgetWidth = 900
+        });
+        await using var monitoring = new MockHardwareMonitoringService();
+        using var viewModel = new SettingsViewModel(
+            settings,
+            new FakeStartupService(),
+            monitoring,
+            new FakeWindowPositionService(),
+            new FakeLocalizationService(AppLanguage.English));
+        viewModel.Draft.Layout = WidgetLayout.ThreeLines;
+
+        await viewModel.SaveCommand.ExecuteAsync(null);
+
+        Assert.Equal(WidgetLayout.ThreeLines, settings.Current.Layout);
+        Assert.False(settings.Current.HasFlexibleWidgetSize);
     }
 
     [Fact]

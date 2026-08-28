@@ -6,8 +6,10 @@
         Icon="/Chipmunk;component/Assets/chipmunk.ico"
         Width="Auto"
         Height="Auto"
-        MinWidth="260"
-        MaxWidth="900"
+        MinWidth="180"
+        MaxWidth="1600"
+        MinHeight="54"
+        MaxHeight="320"
         SizeToContent="WidthAndHeight"
         WindowStyle="None"
         ResizeMode="NoResize"
@@ -40,7 +42,8 @@
                     Width="3"
                     CornerRadius="2"
                     Background="{Binding OverallSeverity, Converter={StaticResource SeverityBrushConverter}}" />
-            <TextBlock Grid.Column="1"
+            <TextBlock x:Name="SensorTextBlock"
+                       Grid.Column="1"
                        Margin="9,0,0,0"
                        Text="{Binding DisplayText}"
                        ToolTip="{Binding ToolTipText}"
@@ -51,5 +54,27 @@
                        TextWrapping="NoWrap"
                        VerticalAlignment="Center" />
         </Grid>
+        <Thumb x:Name="ResizeThumb"
+               Width="18"
+               Height="18"
+               HorizontalAlignment="Right"
+               VerticalAlignment="Bottom"
+               Cursor="SizeNWSE"
+               Visibility="Collapsed"
+               DragStarted="OnResizeStarted"
+               DragDelta="OnResizeDelta"
+               DragCompleted="OnResizeCompleted">
+            <Thumb.Template>
+                <ControlTemplate TargetType="Thumb">
+                    <Grid Background="Transparent">
+                        <Path Data="M 4,14 L 14,4 M 9,14 L 14,9"
+                              Stroke="{DynamicResource SubtleForegroundBrush}"
+                              StrokeThickness="1.5"
+                              StrokeStartLineCap="Round"
+                              StrokeEndLineCap="Round" />
+                    </Grid>
+                </ControlTemplate>
+            </Thumb.Template>
+        </Thumb>
     </Grid>
 </Window>

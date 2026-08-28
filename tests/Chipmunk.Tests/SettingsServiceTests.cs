@@ -18,6 +18,10 @@ public sealed class SettingsServiceTests
             TemperatureUnit = TemperatureUnit.Fahrenheit,
             Language = AppLanguage.Japanese,
             SelectedGpuId = "gpu-1",
+            IsWidgetSizeFixed = false,
+            HasFlexibleWidgetSize = true,
+            FlexibleWidgetWidth = 640,
+            FlexibleWidgetHeight = 120,
             SuppressPawnIoInstallPrompt = true
         };
 
@@ -30,6 +34,10 @@ public sealed class SettingsServiceTests
         Assert.Equal(TemperatureUnit.Fahrenheit, result.TemperatureUnit);
         Assert.Equal(AppLanguage.Japanese, result.Language);
         Assert.Equal("gpu-1", result.SelectedGpuId);
+        Assert.False(result.IsWidgetSizeFixed);
+        Assert.True(result.HasFlexibleWidgetSize);
+        Assert.Equal(640, result.FlexibleWidgetWidth);
+        Assert.Equal(120, result.FlexibleWidgetHeight);
         Assert.True(result.SuppressPawnIoInstallPrompt);
     }
 
@@ -77,6 +85,8 @@ public sealed class SettingsServiceTests
         {
             UpdateIntervalMilliseconds = 123,
             FontSize = 100,
+            FlexibleWidgetWidth = double.PositiveInfinity,
+            FlexibleWidgetHeight = -100,
             BackgroundOpacity = -1,
             DecimalDigits = 9
         };
@@ -85,6 +95,8 @@ public sealed class SettingsServiceTests
 
         Assert.Equal(1000, service.Current.UpdateIntervalMilliseconds);
         Assert.Equal(30, service.Current.FontSize);
+        Assert.Equal(420, service.Current.FlexibleWidgetWidth);
+        Assert.Equal(54, service.Current.FlexibleWidgetHeight);
         Assert.Equal(0.2, service.Current.BackgroundOpacity);
         Assert.Equal(2, service.Current.DecimalDigits);
     }

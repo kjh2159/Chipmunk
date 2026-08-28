@@ -29,6 +29,8 @@
     <sys:String x:Key="UsageCritical">使用率の危険 (%)</sys:String>
     <sys:String x:Key="GroupAppearance">外観</sys:String>
     <sys:String x:Key="FontSizeLabel">フォントサイズ</sys:String>
+    <sys:String x:Key="FixedWidgetSize">ウィジェットのサイズを固定</sys:String>
+    <sys:String x:Key="FlexibleWidgetSizeNote">固定を解除すると、ウィジェットの右下隅をドラッグしてサイズを変更できます。フォントも同時に拡大・縮小されます。</sys:String>
     <sys:String x:Key="BackgroundOpacityLabel">背景の不透明度</sys:String>
     <sys:String x:Key="LayoutLabel">レイアウト</sys:String>
     <sys:String x:Key="ThemeLabel">テーマ</sys:String>
@@ -49,6 +51,7 @@
     <sys:String x:Key="OptionFahrenheit">華氏</sys:String>
     <sys:String x:Key="OptionOneLine">1 行</sys:String>
     <sys:String x:Key="OptionTwoLines">2 行</sys:String>
+    <sys:String x:Key="OptionThreeLines">3 行</sys:String>
     <sys:String x:Key="OptionSystemTheme">システム</sys:String>
     <sys:String x:Key="OptionDarkTheme">ダーク</sys:String>
     <sys:String x:Key="OptionLightTheme">ライト</sys:String>

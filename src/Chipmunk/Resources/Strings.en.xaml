@@ -29,6 +29,8 @@
     <sys:String x:Key="UsageCritical">Usage critical (%)</sys:String>
     <sys:String x:Key="GroupAppearance">Appearance</sys:String>
     <sys:String x:Key="FontSizeLabel">Font size</sys:String>
+    <sys:String x:Key="FixedWidgetSize">Lock widget size</sys:String>
+    <sys:String x:Key="FlexibleWidgetSizeNote">When unlocked, drag the widget's bottom-right corner to resize it. The font scales with the widget.</sys:String>
     <sys:String x:Key="BackgroundOpacityLabel">Background opacity</sys:String>
     <sys:String x:Key="LayoutLabel">Layout</sys:String>
     <sys:String x:Key="ThemeLabel">Theme</sys:String>
@@ -49,6 +51,7 @@
     <sys:String x:Key="OptionFahrenheit">Fahrenheit</sys:String>
     <sys:String x:Key="OptionOneLine">One line</sys:String>
     <sys:String x:Key="OptionTwoLines">Two lines</sys:String>
+    <sys:String x:Key="OptionThreeLines">Three lines</sys:String>
     <sys:String x:Key="OptionSystemTheme">System</sys:String>
     <sys:String x:Key="OptionDarkTheme">Dark</sys:String>
     <sys:String x:Key="OptionLightTheme">Light</sys:String>

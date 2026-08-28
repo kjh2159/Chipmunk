@@ -177,6 +177,12 @@ public sealed partial class WidgetViewModel : ObservableObject, IDisposable
         {
             DisplayText = string.Join("   ", sections);
         }
+        else if (settings.Layout == WidgetLayout.ThreeLines)
+        {
+            // Every hardware category owns one visual row. Individual section
+            // strings never contain line breaks, so GPU details cannot wrap.
+            DisplayText = string.Join(Environment.NewLine, sections);
+        }
         else
         {
             var firstLine = string.Join("   ", sections.Take(2));

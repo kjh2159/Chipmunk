@@ -29,6 +29,8 @@
     <sys:String x:Key="UsageCritical">사용률 위험 (%)</sys:String>
     <sys:String x:Key="GroupAppearance">모양</sys:String>
     <sys:String x:Key="FontSizeLabel">글꼴 크기</sys:String>
+    <sys:String x:Key="FixedWidgetSize">위젯 크기 고정</sys:String>
+    <sys:String x:Key="FlexibleWidgetSizeNote">고정을 해제하면 위젯 오른쪽 아래 모서리를 드래그해 크기를 조절할 수 있습니다. 글꼴도 함께 확대·축소됩니다.</sys:String>
     <sys:String x:Key="BackgroundOpacityLabel">배경 불투명도</sys:String>
     <sys:String x:Key="LayoutLabel">레이아웃</sys:String>
     <sys:String x:Key="ThemeLabel">테마</sys:String>
@@ -49,6 +51,7 @@
     <sys:String x:Key="OptionFahrenheit">화씨</sys:String>
     <sys:String x:Key="OptionOneLine">한 줄</sys:String>
     <sys:String x:Key="OptionTwoLines">두 줄</sys:String>
+    <sys:String x:Key="OptionThreeLines">세 줄</sys:String>
     <sys:String x:Key="OptionSystemTheme">시스템</sys:String>
     <sys:String x:Key="OptionDarkTheme">다크</sys:String>
     <sys:String x:Key="OptionLightTheme">라이트</sys:String>

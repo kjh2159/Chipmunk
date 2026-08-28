@@ -200,6 +200,8 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <TextBlock Grid.Row="0" Text="{DynamicResource FontSizeLabel}" />
                         <Slider Grid.Row="0" Grid.Column="1" Minimum="9" Maximum="30"
@@ -223,6 +225,14 @@
                                   DisplayMemberPath="DisplayName"
                                   SelectedValuePath="Value"
                                   SelectedValue="{Binding Draft.Theme, Mode=TwoWay}" />
+                        <CheckBox Grid.Row="4" Grid.ColumnSpan="3" Margin="0,10,0,0"
+                                  Content="{DynamicResource FixedWidgetSize}"
+                                  IsChecked="{Binding Draft.IsWidgetSizeFixed}" />
+                        <TextBlock Grid.Row="5" Grid.ColumnSpan="3"
+                                   Margin="0,7,0,0"
+                                   Foreground="{DynamicResource SubtleForegroundBrush}"
+                                   TextWrapping="Wrap"
+                                   Text="{DynamicResource FlexibleWidgetSizeNote}" />
                     </Grid>
                 </GroupBox>
 

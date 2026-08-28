@@ -120,6 +120,13 @@ public sealed partial class SettingsViewModel : ObservableObject, IDisposable
         {
             Draft.SelectedGpuId = SelectedGpu?.Id;
             Draft.Language = SelectedLanguage;
+            if (Draft.Layout != _settingsService.Current.Layout)
+            {
+                // A size saved for another line layout would create excess padding
+                // or clipping, so the widget is remeasured for the new layout.
+                Draft.HasFlexibleWidgetSize = false;
+            }
+
             Draft.Normalize();
             _startupService.SetEnabled(Draft.StartWithWindows);
             await _settingsService.SaveAsync(Draft);
@@ -165,7 +172,8 @@ public sealed partial class SettingsViewModel : ObservableObject, IDisposable
         Layouts =
         [
             new(WidgetLayout.OneLine, _localization.Get("OptionOneLine")),
-            new(WidgetLayout.TwoLines, _localization.Get("OptionTwoLines"))
+            new(WidgetLayout.TwoLines, _localization.Get("OptionTwoLines")),
+            new(WidgetLayout.ThreeLines, _localization.Get("OptionThreeLines"))
         ];
         Themes =
         [

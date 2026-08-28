@@ -70,6 +70,7 @@ public partial class App : System.Windows.Application
                 _widgetViewModel,
                 _position,
                 _settings,
+                _logger,
                 ExecuteDoubleClickAction);
             _widget.Closing += OnWidgetClosing;
             _widget.Show();

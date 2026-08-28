@@ -29,6 +29,8 @@
     <sys:String x:Key="UsageCritical">使用率危险 (%)</sys:String>
     <sys:String x:Key="GroupAppearance">外观</sys:String>
     <sys:String x:Key="FontSizeLabel">字体大小</sys:String>
+    <sys:String x:Key="FixedWidgetSize">锁定小组件大小</sys:String>
+    <sys:String x:Key="FlexibleWidgetSizeNote">取消锁定后，可拖动小组件右下角调整大小，字体也会同步缩放。</sys:String>
     <sys:String x:Key="BackgroundOpacityLabel">背景不透明度</sys:String>
     <sys:String x:Key="LayoutLabel">布局</sys:String>
     <sys:String x:Key="ThemeLabel">主题</sys:String>
@@ -49,6 +51,7 @@
     <sys:String x:Key="OptionFahrenheit">华氏度</sys:String>
     <sys:String x:Key="OptionOneLine">单行</sys:String>
     <sys:String x:Key="OptionTwoLines">两行</sys:String>
+    <sys:String x:Key="OptionThreeLines">三行</sys:String>
     <sys:String x:Key="OptionSystemTheme">系统</sys:String>
     <sys:String x:Key="OptionDarkTheme">深色</sys:String>
     <sys:String x:Key="OptionLightTheme">浅色</sys:String>

@@ -4,7 +4,7 @@ namespace Chipmunk.Models;
 
 public sealed class AppSettings
 {
-    public const int CurrentSchemaVersion = 2;
+    public const int CurrentSchemaVersion = 4;
     private static readonly int[] AllowedIntervals = [500, 1000, 2000, 5000];
 
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;
@@ -22,6 +22,10 @@ public sealed class AppSettings
     public TemperatureUnit TemperatureUnit { get; set; } = TemperatureUnit.Celsius;
     public ThresholdSettings Thresholds { get; set; } = new();
     public double FontSize { get; set; } = 13;
+    public bool IsWidgetSizeFixed { get; set; } = true;
+    public bool HasFlexibleWidgetSize { get; set; }
+    public double FlexibleWidgetWidth { get; set; } = 420;
+    public double FlexibleWidgetHeight { get; set; } = 82;
     public double BackgroundOpacity { get; set; } = 0.86;
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public WidgetLayout Layout { get; set; } = WidgetLayout.TwoLines;
@@ -57,6 +61,8 @@ public sealed class AppSettings
         Thresholds ??= new ThresholdSettings();
         Thresholds.Normalize();
         FontSize = Math.Clamp(FontSize, 9, 30);
+        FlexibleWidgetWidth = NormalizeFinite(FlexibleWidgetWidth, 180, 1600, 420);
+        FlexibleWidgetHeight = NormalizeFinite(FlexibleWidgetHeight, 54, 320, 82);
         BackgroundOpacity = Math.Clamp(BackgroundOpacity, 0.2, 1);
         TaskbarMargin = Math.Clamp(TaskbarMargin, 0, 100);
         DecimalDigits = Math.Clamp(DecimalDigits, 0, 2);
@@ -84,6 +90,10 @@ public sealed class AppSettings
         TemperatureUnit = TemperatureUnit,
         Thresholds = Thresholds.Clone(),
         FontSize = FontSize,
+        IsWidgetSizeFixed = IsWidgetSizeFixed,
+        HasFlexibleWidgetSize = HasFlexibleWidgetSize,
+        FlexibleWidgetWidth = FlexibleWidgetWidth,
+        FlexibleWidgetHeight = FlexibleWidgetHeight,
         BackgroundOpacity = BackgroundOpacity,
         Layout = Layout,
         StartWithWindows = StartWithWindows,
@@ -100,4 +110,11 @@ public sealed class AppSettings
         SuppressPawnIoInstallPrompt = SuppressPawnIoInstallPrompt,
         DoubleClickAction = DoubleClickAction
     };
+
+    private static double NormalizeFinite(
+        double value,
+        double minimum,
+        double maximum,
+        double fallback) =>
+        double.IsFinite(value) ? Math.Clamp(value, minimum, maximum) : fallback;
 }
