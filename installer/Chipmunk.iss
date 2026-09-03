@@ -5,6 +5,9 @@
 #define PawnIoVersion "2.2.0"
 #define PawnIoSha256 "1F519A22E47187F70A1379A48CA604981C4FCF694F4E65B734AAA74A9FBA3032"
 #define PawnIoInstaller AddBackslash(SourcePath) + "dependencies\PawnIO_setup.exe"
+#ifndef AppPayloadDir
+  #define AppPayloadDir AddBackslash(SourcePath) + "..\artifacts\portable"
+#endif
 
 ; Refuse to create a distributable installer if the bundled kernel-driver
 ; installer is missing or differs from the reviewed official binary.
@@ -43,7 +46,7 @@ Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription:
 Name: "pawnio"; Description: "Install the signed PawnIO {#PawnIoVersion} kernel driver for CPU temperature sensors (optional; requires a separate UAC approval)"; GroupDescription: "Optional hardware access:"; Flags: unchecked; Check: PawnIoNotInstalled
 
 [Files]
-Source: "..\artifacts\portable\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#AppPayloadDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
@@ -58,6 +61,26 @@ Filename: "{app}\{#MyAppExeName}"; Description: "Launch {#MyAppName}"; Flags: no
 [Code]
 var
   PawnIoInstallAttempted: Boolean;
+  PawnIoDefaultSelectionApplied: Boolean;
+
+function IsIntelCpu(): Boolean;
+var
+  VendorIdentifier: String;
+begin
+  { Windows exposes the processor vendor without requiring WMI or elevation. }
+  Result :=
+    RegQueryStringValue(
+      HKLM64,
+      'HARDWARE\DESCRIPTION\System\CentralProcessor\0',
+      'VendorIdentifier',
+      VendorIdentifier) and
+    (CompareText(Trim(VendorIdentifier), 'GenuineIntel') = 0);
+
+  if Result then
+    Log('Intel CPU detected; PawnIO will be selected by default.')
+  else
+    Log('Intel CPU was not detected; PawnIO remains optional and unchecked.');
+end;
 
 function PawnIoNotInstalled(): Boolean;
 begin
@@ -143,4 +166,16 @@ procedure CurStepChanged(CurStep: TSetupStep);
 begin
   if CurStep = ssPostInstall then
     InstallOptionalPawnIo();
+end;
+
+procedure CurPageChanged(CurPageID: Integer);
+begin
+  { Apply the default only once. Returning to the task page must not override a
+    user's explicit decision to clear the optional PawnIO checkbox. }
+  if (CurPageID = wpSelectTasks) and (not PawnIoDefaultSelectionApplied) then
+  begin
+    PawnIoDefaultSelectionApplied := True;
+    if PawnIoNotInstalled() and IsIntelCpu() then
+      WizardSelectTasks('pawnio');
+  end;
 end;

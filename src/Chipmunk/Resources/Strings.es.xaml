@@ -101,4 +101,12 @@
     <sys:String x:Key="PawnIoVerificationMessage">El SHA-256 del instalador de PawnIO no coincide con el valor oficial fijado, por lo que no se ejecutó.</sys:String>
     <sys:String x:Key="PawnIoFailedTitle">Error al instalar PawnIO</sys:String>
     <sys:String x:Key="PawnIoFailedMessage">No se pudo instalar PawnIO. Código de salida: {0}</sys:String>
+    <sys:String x:Key="ElevationConsentTitle">Acceso de administrador</sys:String>
+    <sys:String x:Key="ElevationConsentHeader">La temperatura de la CPU necesita acceso adicional</sys:String>
+    <sys:String x:Key="ElevationConsentDescription">PawnIO está instalado, pero la temperatura de la CPU sigue sin estar disponible. Reiniciar Chipmunk como administrador puede permitir la lectura del sensor.</sys:String>
+    <sys:String x:Key="ElevationConsentUacNote">Windows mostrará una solicitud de UAC. Solo esta sesión reiniciada de Chipmunk se ejecutará como administrador; los permisos de inicio no cambiarán permanentemente.</sys:String>
+    <sys:String x:Key="ElevationContinueNormally">Continuar normalmente</sys:String>
+    <sys:String x:Key="ElevationRestartAsAdministrator">Reiniciar como administrador</sys:String>
+    <sys:String x:Key="ElevationRestartFailedTitle">Error al reiniciar como administrador</sys:String>
+    <sys:String x:Key="ElevationRestartFailedMessage">No se pudo reiniciar Chipmunk como administrador. {0}</sys:String>
 </ResourceDictionary>

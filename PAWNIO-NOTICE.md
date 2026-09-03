@@ -1,7 +1,9 @@
 # PawnIO binary notice
 
-Chipmunk includes the unmodified official PawnIO installer as an
-optional component. It is not installed automatically.
+Chipmunk includes the unmodified official PawnIO installer as an optional
+component. The installer selects this option by default when Windows reports
+an Intel CPU, but the user can clear it before installation. PawnIO is never
+installed silently and always requires a separate Windows UAC approval.
 
 - Product: PawnIO official edition
 - Version: 2.2.0

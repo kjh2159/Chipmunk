@@ -101,4 +101,12 @@
     <sys:String x:Key="PawnIoVerificationMessage">PawnIO 安装程序的 SHA-256 与固定的官方值不匹配，因此未启动。</sys:String>
     <sys:String x:Key="PawnIoFailedTitle">PawnIO 安装失败</sys:String>
     <sys:String x:Key="PawnIoFailedMessage">无法安装 PawnIO。退出代码：{0}</sys:String>
+    <sys:String x:Key="ElevationConsentTitle">管理员权限</sys:String>
+    <sys:String x:Key="ElevationConsentHeader">读取 CPU 温度需要额外权限</sys:String>
+    <sys:String x:Key="ElevationConsentDescription">PawnIO 已安装，但仍无法读取 CPU 温度。以管理员身份重新启动 Chipmunk 可能允许读取硬件传感器。</sys:String>
+    <sys:String x:Key="ElevationConsentUacNote">Windows 将显示 UAC 提示。只有重新启动后的本次 Chipmunk 会话会以管理员身份运行，不会永久更改启动权限。</sys:String>
+    <sys:String x:Key="ElevationContinueNormally">以普通权限继续</sys:String>
+    <sys:String x:Key="ElevationRestartAsAdministrator">以管理员身份重新启动</sys:String>
+    <sys:String x:Key="ElevationRestartFailedTitle">管理员重新启动失败</sys:String>
+    <sys:String x:Key="ElevationRestartFailedMessage">无法以管理员身份重新启动 Chipmunk。{0}</sys:String>
 </ResourceDictionary>

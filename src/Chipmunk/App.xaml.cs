@@ -22,6 +22,7 @@ public partial class App : System.Windows.Application
     private IWindowPositionService? _position;
     private IHardwareMonitoringService? _monitoring;
     private IPawnIoService? _pawnIo;
+    private IElevationService? _elevation;
     private WidgetViewModel? _widgetViewModel;
     private WidgetWindow? _widget;
     private SettingsWindow? _settingsWindow;
@@ -35,6 +36,15 @@ public partial class App : System.Windows.Application
     {
         base.OnStartup(e);
         _logger = new RateLimitedFileLogger();
+        _elevation = new ElevationService(_logger);
+        if (ElevationService.TryGetRestartParentProcessId(e.Args, out var parentProcessId))
+        {
+            await _elevation.WaitForParentExitAsync(
+                parentProcessId,
+                TimeSpan.FromSeconds(30),
+                _applicationCancellation.Token);
+        }
+
         _singleInstance = new SingleInstanceService();
 
         if (!_singleInstance.TryAcquire())
@@ -249,22 +259,37 @@ public partial class App : System.Windows.Application
         if (Interlocked.Increment(ref _missingCpuTemperatureSamples) < 3 ||
             Volatile.Read(ref _pawnIoPromptHandled) != 0 ||
             _pawnIo is null ||
+            _elevation is null ||
             _settings is null)
         {
             return;
         }
 
         var status = _pawnIo.GetStatus();
-        if (!PawnIoPromptPolicy.ShouldOfferInstallation(status, snapshot, _settings.Current))
+        if (PawnIoPromptPolicy.ShouldOfferInstallation(status, snapshot, _settings.Current))
         {
-            Interlocked.Exchange(ref _pawnIoPromptHandled, 1);
+            if (Interlocked.CompareExchange(ref _pawnIoPromptHandled, 1, 0) == 0)
+            {
+                _ = Dispatcher.BeginInvoke(() => _ = ShowPawnIoConsentAsync());
+            }
+
             return;
         }
 
-        if (Interlocked.CompareExchange(ref _pawnIoPromptHandled, 1, 0) == 0)
+        if (ElevationPromptPolicy.ShouldOfferRestart(
+                status,
+                snapshot,
+                _elevation.IsProcessElevated))
         {
-            _ = Dispatcher.BeginInvoke(() => _ = ShowPawnIoConsentAsync());
+            if (Interlocked.CompareExchange(ref _pawnIoPromptHandled, 1, 0) == 0)
+            {
+                _ = Dispatcher.BeginInvoke(ShowElevationConsent);
+            }
+
+            return;
         }
+
+        Interlocked.Exchange(ref _pawnIoPromptHandled, 1);
     }
 
     private async Task ShowPawnIoConsentAsync()
@@ -334,6 +359,43 @@ public partial class App : System.Windows.Application
                         "PawnIoFailedMessage",
                         result.ExitCode?.ToString() ?? "N/A"),
                     _localization.Get("PawnIoFailedTitle"),
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                break;
+        }
+    }
+
+    private void ShowElevationConsent()
+    {
+        if (_elevation is null || _elevation.IsProcessElevated)
+        {
+            return;
+        }
+
+        var consentWindow = new ElevationConsentWindow();
+        consentWindow.ShowDialog();
+        if (!consentWindow.RestartRequested)
+        {
+            return;
+        }
+
+        var result = _elevation.RestartAsAdministrator(Environment.ProcessId);
+        switch (result.Outcome)
+        {
+            case ElevationRestartOutcome.Started:
+                _ = ExitApplicationAsync();
+                break;
+
+            case ElevationRestartOutcome.Cancelled:
+            case ElevationRestartOutcome.AlreadyElevated:
+                break;
+
+            default:
+                System.Windows.MessageBox.Show(
+                    _localization.Format(
+                        "ElevationRestartFailedMessage",
+                        result.ErrorMessage ?? "N/A"),
+                    _localization.Get("ElevationRestartFailedTitle"),
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
                 break;

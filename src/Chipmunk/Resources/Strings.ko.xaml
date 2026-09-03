@@ -101,4 +101,12 @@
     <sys:String x:Key="PawnIoVerificationMessage">PawnIO 설치 파일의 SHA-256이 공식 고정값과 다르므로 실행하지 않았습니다.</sys:String>
     <sys:String x:Key="PawnIoFailedTitle">PawnIO 설치 실패</sys:String>
     <sys:String x:Key="PawnIoFailedMessage">PawnIO 설치에 실패했습니다. 종료 코드: {0}</sys:String>
+    <sys:String x:Key="ElevationConsentTitle">관리자 권한</sys:String>
+    <sys:String x:Key="ElevationConsentHeader">CPU 온도 확인에 추가 권한이 필요합니다</sys:String>
+    <sys:String x:Key="ElevationConsentDescription">PawnIO가 설치되어 있지만 CPU 온도를 아직 읽을 수 없습니다. Chipmunk를 관리자 권한으로 다시 시작하면 하드웨어 센서에 접근할 수 있습니다.</sys:String>
+    <sys:String x:Key="ElevationConsentUacNote">Windows UAC 확인 창이 표시됩니다. 다시 시작되는 이번 Chipmunk 실행만 관리자 권한을 사용하며 시작 권한을 영구적으로 변경하지 않습니다.</sys:String>
+    <sys:String x:Key="ElevationContinueNormally">일반 권한으로 계속</sys:String>
+    <sys:String x:Key="ElevationRestartAsAdministrator">관리자 권한으로 다시 시작</sys:String>
+    <sys:String x:Key="ElevationRestartFailedTitle">관리자 권한 재시작 실패</sys:String>
+    <sys:String x:Key="ElevationRestartFailedMessage">Chipmunk를 관리자 권한으로 다시 시작하지 못했습니다. {0}</sys:String>
 </ResourceDictionary>

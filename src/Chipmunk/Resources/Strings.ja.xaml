@@ -101,4 +101,12 @@
     <sys:String x:Key="PawnIoVerificationMessage">PawnIO インストーラーの SHA-256 が固定された公式値と一致しないため、起動しませんでした。</sys:String>
     <sys:String x:Key="PawnIoFailedTitle">PawnIO のインストールに失敗</sys:String>
     <sys:String x:Key="PawnIoFailedMessage">PawnIO をインストールできませんでした。終了コード: {0}</sys:String>
+    <sys:String x:Key="ElevationConsentTitle">管理者権限</sys:String>
+    <sys:String x:Key="ElevationConsentHeader">CPU 温度の取得には追加の権限が必要です</sys:String>
+    <sys:String x:Key="ElevationConsentDescription">PawnIO はインストールされていますが、CPU 温度を取得できません。Chipmunk を管理者として再起動すると、ハードウェアセンサーを読み取れる場合があります。</sys:String>
+    <sys:String x:Key="ElevationConsentUacNote">Windows の UAC 確認画面が表示されます。再起動後の今回の Chipmunk セッションのみが管理者権限で実行され、起動権限が恒久的に変更されることはありません。</sys:String>
+    <sys:String x:Key="ElevationContinueNormally">通常権限で続行</sys:String>
+    <sys:String x:Key="ElevationRestartAsAdministrator">管理者として再起動</sys:String>
+    <sys:String x:Key="ElevationRestartFailedTitle">管理者としての再起動に失敗しました</sys:String>
+    <sys:String x:Key="ElevationRestartFailedMessage">Chipmunk を管理者として再起動できませんでした。{0}</sys:String>
 </ResourceDictionary>

@@ -65,8 +65,8 @@ The distributed application is self-contained, so users do not need to install t
 4. Start Chipmunk from the Start menu or desktop shortcut.
 
 The Chipmunk application itself does not normally require administrator privileges.
-
-> For a special case (e.g., temperature of Intel CPUs), administrator privileges are required.
+If PawnIO is installed but CPU temperature remains unavailable, Chipmunk can offer
+an administrator restart for that session only. Windows will show a UAC prompt first.
 
 ## Getting started
 

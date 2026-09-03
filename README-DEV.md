@@ -253,6 +253,7 @@ PawnIO is an optional low-level hardware-access driver used when LibreHardwareMo
 The application follows these rules:
 
 - PawnIO is never installed silently.
+- The installer preselects the optional PawnIO task on detected Intel CPUs; the user can clear it.
 - The prompt is shown only after repeated missing CPU temperature samples.
 - The user must explicitly select **Install**.
 - The bundled installer SHA-256 is verified before execution.
@@ -534,8 +535,9 @@ The installer:
 - Installs Chipmunk under the current user's Local AppData
 - Does not require UAC for the application itself
 - Can create startup and desktop shortcuts
-- Offers PawnIO as an unchecked optional task
+- Offers PawnIO as an optional task, preselected only when an Intel CPU is detected
 - Requests a separate UAC confirmation only if PawnIO is selected
+- Keeps Chipmunk at normal privileges and offers an elevated restart only when PawnIO is installed but CPU temperature remains unavailable
 - Uses the Chipmunk application icon
 
 ## Runtime resource cleanup
