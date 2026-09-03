@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  A lightweight real-time system monitoring widget for Windows 10 and Windows 11.
+  A lightweight real-time system monitoring widget for Windows 10 and 11.
 </p>
 
 Chipmunk displays CPU, GPU, and memory information in a compact overlay positioned above the Windows taskbar.
