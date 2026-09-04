@@ -207,6 +207,11 @@ Disable **Click-through mode** from the system tray menu.
 
 Architecture, source code structure, build instructions, testing, and packaging documentation are available in the [Developer README](README-DEV.md).
 
+## Future Roadmap
+
+- [ ] Custom colorization for warning and critical threshold.
+- [ ] Separate settings list into tabs.
+
 ## License
 
 Chipmunk is distributed under the terms described in [LICENSE](LICENSE).
