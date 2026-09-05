@@ -1,5 +1,5 @@
 #define MyAppName "Chipmunk"
-#define MyAppVersion "0.1.1"
+#define MyAppVersion "0.1.2"
 #define MyAppPublisher "Chipmunk contributors"
 #define MyAppExeName "Chipmunk.exe"
 #define PawnIoVersion "2.2.0"

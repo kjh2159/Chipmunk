@@ -15,7 +15,7 @@
     <Product>Chipmunk</Product>
     <Description>Lightweight real-time system monitoring widget for Windows.</Description>
     <Company>Chipmunk contributors</Company>
-    <Version>0.1.1</Version>
+    <Version>0.1.2</Version>
     <PublishReadyToRun>true</PublishReadyToRun>
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
   </PropertyGroup>
