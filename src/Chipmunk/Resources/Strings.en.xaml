@@ -109,4 +109,9 @@
     <sys:String x:Key="ElevationRestartAsAdministrator">Restart as administrator</sys:String>
     <sys:String x:Key="ElevationRestartFailedTitle">Administrator restart failed</sys:String>
     <sys:String x:Key="ElevationRestartFailedMessage">Chipmunk could not be restarted as administrator. {0}</sys:String>
+    <sys:String x:Key="ColorPickerMoreColors">More colors…</sys:String>
+    <sys:String x:Key="ColorPickerTitle">Choose color</sys:String>
+    <sys:String x:Key="ColorPickerContinuousPalette">Continuous color palette</sys:String>
+    <sys:String x:Key="ColorPickerHexLabel">Hex (#RRGGBB / #AARRGGBB)</sys:String>
+    <sys:String x:Key="ColorPickerInvalidHex">Enter a valid #RRGGBB or #AARRGGBB value.</sys:String>
 </ResourceDictionary>

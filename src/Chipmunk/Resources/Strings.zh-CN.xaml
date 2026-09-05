@@ -109,4 +109,9 @@
     <sys:String x:Key="ElevationRestartAsAdministrator">以管理员身份重新启动</sys:String>
     <sys:String x:Key="ElevationRestartFailedTitle">管理员重新启动失败</sys:String>
     <sys:String x:Key="ElevationRestartFailedMessage">无法以管理员身份重新启动 Chipmunk。{0}</sys:String>
+    <sys:String x:Key="ColorPickerMoreColors">更多颜色…</sys:String>
+    <sys:String x:Key="ColorPickerTitle">选择颜色</sys:String>
+    <sys:String x:Key="ColorPickerContinuousPalette">连续色彩面板</sys:String>
+    <sys:String x:Key="ColorPickerHexLabel">十六进制 (#RRGGBB / #AARRGGBB)</sys:String>
+    <sys:String x:Key="ColorPickerInvalidHex">请输入有效的 #RRGGBB 或 #AARRGGBB 值。</sys:String>
 </ResourceDictionary>

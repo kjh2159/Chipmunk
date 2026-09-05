@@ -109,4 +109,9 @@
     <sys:String x:Key="ElevationRestartAsAdministrator">관리자 권한으로 다시 시작</sys:String>
     <sys:String x:Key="ElevationRestartFailedTitle">관리자 권한 재시작 실패</sys:String>
     <sys:String x:Key="ElevationRestartFailedMessage">Chipmunk를 관리자 권한으로 다시 시작하지 못했습니다. {0}</sys:String>
+    <sys:String x:Key="ColorPickerMoreColors">더 많은 색…</sys:String>
+    <sys:String x:Key="ColorPickerTitle">색상 선택</sys:String>
+    <sys:String x:Key="ColorPickerContinuousPalette">연속 색상 팔레트</sys:String>
+    <sys:String x:Key="ColorPickerHexLabel">Hex (#RRGGBB / #AARRGGBB)</sys:String>
+    <sys:String x:Key="ColorPickerInvalidHex">올바른 #RRGGBB 또는 #AARRGGBB 값을 입력하세요.</sys:String>
 </ResourceDictionary>

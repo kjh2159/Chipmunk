@@ -33,44 +33,50 @@
                 <Border.Effect>
                     <DropShadowEffect BlurRadius="10" Opacity="0.35" ShadowDepth="2" />
                 </Border.Effect>
-                <ItemsControl ItemsSource="{Binding Palette, RelativeSource={RelativeSource AncestorType=UserControl}}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <UniformGrid Columns="6" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Button Tag="{Binding}"
-                                    Click="OnPaletteColorClick"
-                                    ToolTip="{Binding Hex}"
-                                    Width="30"
-                                    Height="30"
-                                    Margin="2"
-                                    Padding="2"
-                                    BorderThickness="0"
-                                    Background="Transparent">
-                                <Border Width="22"
-                                        Height="22"
-                                        CornerRadius="3"
-                                        Background="{Binding Brush}">
-                                    <Border.Style>
-                                        <Style TargetType="Border">
-                                            <Setter Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}" />
-                                            <Setter Property="BorderThickness" Value="1" />
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                                    <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
-                                                    <Setter Property="BorderThickness" Value="3" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Border.Style>
-                                </Border>
-                            </Button>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                <StackPanel>
+                    <ItemsControl ItemsSource="{Binding Palette, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="6" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Tag="{Binding}"
+                                        Click="OnPaletteColorClick"
+                                        ToolTip="{Binding Hex}"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="2"
+                                        Padding="2"
+                                        BorderThickness="0"
+                                        Background="Transparent">
+                                    <Border Width="22"
+                                            Height="22"
+                                            CornerRadius="3"
+                                            Background="{Binding Brush}">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}" />
+                                                <Setter Property="BorderThickness" Value="1" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                        <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                                                        <Setter Property="BorderThickness" Value="3" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                    </Border>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <Separator Margin="2,6" />
+                    <Button Content="{DynamicResource ColorPickerMoreColors}"
+                            Padding="10,5"
+                            Click="OnMoreColorsClick" />
+                </StackPanel>
             </Border>
         </Popup>
     </Grid>

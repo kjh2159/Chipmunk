@@ -87,6 +87,20 @@ public partial class ColorPalettePicker : WpfUserControl
         SwatchButton.IsChecked = false;
     }
 
+    private void OnMoreColorsClick(object sender, RoutedEventArgs e)
+    {
+        PalettePopup.IsOpen = false;
+        var dialog = new AdvancedColorPickerWindow(SelectedColor)
+        {
+            Owner = System.Windows.Window.GetWindow(this)
+        };
+
+        if (dialog.ShowDialog() == true)
+        {
+            SelectedColor = dialog.SelectedColor;
+        }
+    }
+
     private static IEnumerable<PaletteColorOption> CreatePalette()
     {
         string[] colors =

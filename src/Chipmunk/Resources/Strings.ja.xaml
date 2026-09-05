@@ -109,4 +109,9 @@
     <sys:String x:Key="ElevationRestartAsAdministrator">管理者として再起動</sys:String>
     <sys:String x:Key="ElevationRestartFailedTitle">管理者としての再起動に失敗しました</sys:String>
     <sys:String x:Key="ElevationRestartFailedMessage">Chipmunk を管理者として再起動できませんでした。{0}</sys:String>
+    <sys:String x:Key="ColorPickerMoreColors">その他の色…</sys:String>
+    <sys:String x:Key="ColorPickerTitle">色の選択</sys:String>
+    <sys:String x:Key="ColorPickerContinuousPalette">連続カラーパレット</sys:String>
+    <sys:String x:Key="ColorPickerHexLabel">16進数 (#RRGGBB / #AARRGGBB)</sys:String>
+    <sys:String x:Key="ColorPickerInvalidHex">有効な #RRGGBB または #AARRGGBB 値を入力してください。</sys:String>
 </ResourceDictionary>
