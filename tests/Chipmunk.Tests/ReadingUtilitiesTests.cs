@@ -55,6 +55,68 @@ public sealed class ReadingUtilitiesTests
         Assert.Equal("intel", GpuSelectionPolicy.Select([integrated, discrete], null)?.DeviceId);
     }
 
+    [Theory]
+    [InlineData(true, false, ThresholdKind.TemperatureWarning, "#FF010101")]
+    [InlineData(true, true, ThresholdKind.TemperatureCritical, "#FF020202")]
+    [InlineData(false, false, ThresholdKind.UsageWarning, "#FF030303")]
+    [InlineData(false, true, ThresholdKind.UsageCritical, "#FF040404")]
+    public void AlertState_UsesColorForTheThresholdThatRaisedIt(
+        bool temperature,
+        bool critical,
+        ThresholdKind expectedKind,
+        string expectedColor)
+    {
+        var thresholds = CustomColorThresholds();
+        var candidate = temperature
+            ? AlertStateResolver.ForTemperature(critical ? 90 : 75, thresholds)
+            : AlertStateResolver.ForUsage(critical ? 99 : 85, thresholds);
+
+        var state = AlertStateResolver.Resolve([candidate], thresholds);
+
+        Assert.Equal(expectedKind, state.ThresholdKind);
+        Assert.Equal(expectedColor, state.ColorHex);
+    }
+
+    [Fact]
+    public void AlertState_CriticalAlwaysWinsOverWarning()
+    {
+        var thresholds = CustomColorThresholds();
+
+        var state = AlertStateResolver.Resolve(
+            [
+                AlertStateResolver.ForTemperature(75, thresholds),
+                AlertStateResolver.ForUsage(99, thresholds)
+            ],
+            thresholds);
+
+        Assert.Equal(Severity.Critical, state.Severity);
+        Assert.Equal(ThresholdKind.UsageCritical, state.ThresholdKind);
+        Assert.Equal("#FF040404", state.ColorHex);
+    }
+
+    [Fact]
+    public void AlertState_SameSeverityTieAlwaysPrefersTemperatureRegardlessOfInputOrder()
+    {
+        var thresholds = CustomColorThresholds();
+        var temperature = AlertStateResolver.ForTemperature(75, thresholds);
+        var usage = AlertStateResolver.ForUsage(85, thresholds);
+
+        var temperatureFirst = AlertStateResolver.Resolve([temperature, usage], thresholds);
+        var usageFirst = AlertStateResolver.Resolve([usage, temperature], thresholds);
+
+        Assert.Equal(ThresholdKind.TemperatureWarning, temperatureFirst.ThresholdKind);
+        Assert.Equal("#FF010101", temperatureFirst.ColorHex);
+        Assert.Equal(temperatureFirst, usageFirst);
+    }
+
+    private static ThresholdSettings CustomColorThresholds() => new()
+    {
+        TemperatureWarningColor = "#FF010101",
+        TemperatureCriticalColor = "#FF020202",
+        UsageWarningColor = "#FF030303",
+        UsageCriticalColor = "#FF040404"
+    };
+
     private static GpuReading Gpu(string id, string name, double usage) =>
         new(id, name, HardwareKind.GpuNvidia, 50, usage, null, null);
 }

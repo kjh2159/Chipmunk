@@ -76,6 +76,22 @@ public enum Severity
     Unavailable
 }
 
+public enum ThresholdKind
+{
+    None,
+    TemperatureWarning,
+    TemperatureCritical,
+    UsageWarning,
+    UsageCritical
+}
+
+public readonly record struct AlertCandidate(Severity Severity, ThresholdKind ThresholdKind);
+
+public sealed record SeverityVisualState(
+    Severity Severity,
+    ThresholdKind ThresholdKind,
+    string? ColorHex);
+
 public enum DoubleClickAction
 {
     TaskManager,

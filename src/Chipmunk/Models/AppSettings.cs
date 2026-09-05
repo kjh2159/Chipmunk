@@ -4,7 +4,7 @@ namespace Chipmunk.Models;
 
 public sealed class AppSettings
 {
-    public const int CurrentSchemaVersion = 4;
+    public const int CurrentSchemaVersion = 5;
     private static readonly int[] AllowedIntervals = [500, 1000, 2000, 5000];
 
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;

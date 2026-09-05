@@ -1,6 +1,7 @@
 <Window x:Class="Chipmunk.Views.SettingsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:Chipmunk.Controls"
         Title="{DynamicResource SettingsWindowTitle}"
         Icon="/Chipmunk;component/Assets/chipmunk.ico"
         Width="650"
@@ -157,7 +158,8 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="170" />
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="55" />
+                            <ColumnDefinition Width="45" />
+                            <ColumnDefinition Width="34" />
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -170,21 +172,29 @@
                                 Value="{Binding Draft.Thresholds.TemperatureWarning}" />
                         <TextBlock Grid.Row="0" Grid.Column="2"
                                    Text="{Binding Draft.Thresholds.TemperatureWarning, StringFormat={}{0:F0}}" />
+                        <controls:ColorPalettePicker Grid.Row="0" Grid.Column="3"
+                                                     SelectedColor="{Binding Draft.Thresholds.TemperatureWarningColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         <TextBlock Grid.Row="1" Text="{DynamicResource TemperatureCritical}" Margin="0,10,0,0" />
                         <Slider Grid.Row="1" Grid.Column="1" Minimum="50" Maximum="120" Margin="0,10,0,0"
                                 Value="{Binding Draft.Thresholds.TemperatureCritical}" />
                         <TextBlock Grid.Row="1" Grid.Column="2" Margin="0,10,0,0"
                                    Text="{Binding Draft.Thresholds.TemperatureCritical, StringFormat={}{0:F0}}" />
+                        <controls:ColorPalettePicker Grid.Row="1" Grid.Column="3" Margin="0,10,0,0"
+                                                     SelectedColor="{Binding Draft.Thresholds.TemperatureCriticalColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         <TextBlock Grid.Row="2" Text="{DynamicResource UsageWarning}" Margin="0,10,0,0" />
                         <Slider Grid.Row="2" Grid.Column="1" Minimum="40" Maximum="100" Margin="0,10,0,0"
                                 Value="{Binding Draft.Thresholds.UsageWarning}" />
                         <TextBlock Grid.Row="2" Grid.Column="2" Margin="0,10,0,0"
                                    Text="{Binding Draft.Thresholds.UsageWarning, StringFormat={}{0:F0}}" />
+                        <controls:ColorPalettePicker Grid.Row="2" Grid.Column="3" Margin="0,10,0,0"
+                                                     SelectedColor="{Binding Draft.Thresholds.UsageWarningColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         <TextBlock Grid.Row="3" Text="{DynamicResource UsageCritical}" Margin="0,10,0,0" />
                         <Slider Grid.Row="3" Grid.Column="1" Minimum="50" Maximum="100" Margin="0,10,0,0"
                                 Value="{Binding Draft.Thresholds.UsageCritical}" />
                         <TextBlock Grid.Row="3" Grid.Column="2" Margin="0,10,0,0"
                                    Text="{Binding Draft.Thresholds.UsageCritical, StringFormat={}{0:F0}}" />
+                        <controls:ColorPalettePicker Grid.Row="3" Grid.Column="3" Margin="0,10,0,0"
+                                                     SelectedColor="{Binding Draft.Thresholds.UsageCriticalColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     </Grid>
                 </GroupBox>
 

@@ -52,6 +52,33 @@ public sealed class MonitoringIntegrationTests
     }
 
     [Fact]
+    public async Task SettingsChange_ImmediatelyUpdatesWidgetThresholdColor()
+    {
+        using var environment = new TestEnvironment();
+        using var logger = new RateLimitedFileLogger(environment.LogDirectory);
+        var settings = new SettingsService(logger, environment.SettingsDirectory);
+        await settings.LoadAsync();
+        await using var monitoring = new ManualMonitoringService();
+        using var viewModel = new WidgetViewModel(monitoring, settings, new LocalizationService());
+        monitoring.Publish(new MonitoringSnapshot(
+            DateTimeOffset.Now,
+            50,
+            25,
+            [],
+            8d * 1024 * 1024 * 1024,
+            16d * 1024 * 1024 * 1024));
+
+        var changed = settings.Current.Clone();
+        changed.Thresholds.UsageWarning = 40;
+        changed.Thresholds.UsageWarningColor = "#FF800080";
+        await settings.SaveAsync(changed);
+
+        Assert.Equal(Severity.Warning, viewModel.OverallAlertState.Severity);
+        Assert.Equal(ThresholdKind.UsageWarning, viewModel.OverallAlertState.ThresholdKind);
+        Assert.Equal("#FF800080", viewModel.OverallAlertState.ColorHex);
+    }
+
+    [Fact]
     public async Task NullSensors_RenderAsNAWithoutThrowing()
     {
         using var environment = new TestEnvironment();

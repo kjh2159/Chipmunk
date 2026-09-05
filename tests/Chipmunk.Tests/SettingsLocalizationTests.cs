@@ -85,6 +85,41 @@ public sealed class SettingsLocalizationTests
         Assert.Equal(AppLanguage.Korean, localization.CurrentLanguage);
     }
 
+    [Fact]
+    public async Task RestoreDefaults_ResetsThresholdNumbersAndColors()
+    {
+        using var environment = new TestEnvironment();
+        using var logger = new RateLimitedFileLogger(environment.LogDirectory);
+        var settings = new SettingsService(logger, environment.SettingsDirectory);
+        await settings.SaveAsync(new AppSettings
+        {
+            Language = AppLanguage.English,
+            Thresholds = new ThresholdSettings
+            {
+                TemperatureWarning = 74,
+                TemperatureWarningColor = "#FF010101",
+                TemperatureCriticalColor = "#FF020202",
+                UsageWarningColor = "#FF030303",
+                UsageCriticalColor = "#FF040404"
+            }
+        });
+        await using var monitoring = new MockHardwareMonitoringService();
+        using var viewModel = new SettingsViewModel(
+            settings,
+            new FakeStartupService(),
+            monitoring,
+            new FakeWindowPositionService(),
+            new FakeLocalizationService(AppLanguage.English));
+
+        viewModel.RestoreDefaultsCommand.Execute(null);
+
+        Assert.Equal(70, viewModel.Draft.Thresholds.TemperatureWarning);
+        Assert.Equal(ThresholdSettings.DefaultWarningColor, viewModel.Draft.Thresholds.TemperatureWarningColor);
+        Assert.Equal(ThresholdSettings.DefaultCriticalColor, viewModel.Draft.Thresholds.TemperatureCriticalColor);
+        Assert.Equal(ThresholdSettings.DefaultWarningColor, viewModel.Draft.Thresholds.UsageWarningColor);
+        Assert.Equal(ThresholdSettings.DefaultCriticalColor, viewModel.Draft.Thresholds.UsageCriticalColor);
+    }
+
     private sealed class FakeLocalizationService(AppLanguage initialLanguage)
         : ILocalizationService
     {

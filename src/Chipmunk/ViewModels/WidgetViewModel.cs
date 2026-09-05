@@ -21,6 +21,10 @@ public sealed partial class WidgetViewModel : ObservableObject, IDisposable
     private Severity _overallSeverity = Severity.Unavailable;
 
     [ObservableProperty]
+    private SeverityVisualState _overallAlertState =
+        new(Severity.Unavailable, ThresholdKind.None, null);
+
+    [ObservableProperty]
     private double _widgetFontSize = 13;
 
     [ObservableProperty]
@@ -108,13 +112,13 @@ public sealed partial class WidgetViewModel : ObservableObject, IDisposable
         var settings = _settingsService.Current;
         var gpu = GpuSelectionPolicy.Select(snapshot.Gpus, settings.SelectedGpuId);
         var sections = new List<string>();
-        var severities = new List<Severity>();
+        var alertCandidates = new List<AlertCandidate>();
 
         var cpuParts = new List<string>();
         if (settings.ShowCpuTemperature)
         {
             cpuParts.Add(FormatTemperature(snapshot.CpuTemperatureCelsius, settings));
-            severities.Add(SeverityClassifier.ForTemperature(
+            alertCandidates.Add(AlertStateResolver.ForTemperature(
                 snapshot.CpuTemperatureCelsius,
                 settings.Thresholds));
         }
@@ -122,7 +126,9 @@ public sealed partial class WidgetViewModel : ObservableObject, IDisposable
         if (settings.ShowCpuUsage)
         {
             cpuParts.Add(FormatPercent(snapshot.CpuUsagePercent, settings.DecimalDigits));
-            severities.Add(SeverityClassifier.ForUsage(snapshot.CpuUsagePercent, settings.Thresholds));
+            alertCandidates.Add(AlertStateResolver.ForUsage(
+                snapshot.CpuUsagePercent,
+                settings.Thresholds));
         }
 
         if (cpuParts.Count > 0)
@@ -134,7 +140,7 @@ public sealed partial class WidgetViewModel : ObservableObject, IDisposable
         if (settings.ShowGpuTemperature)
         {
             gpuParts.Add(FormatTemperature(gpu?.TemperatureCelsius, settings));
-            severities.Add(SeverityClassifier.ForTemperature(
+            alertCandidates.Add(AlertStateResolver.ForTemperature(
                 gpu?.TemperatureCelsius,
                 settings.Thresholds));
         }
@@ -142,7 +148,9 @@ public sealed partial class WidgetViewModel : ObservableObject, IDisposable
         if (settings.ShowGpuUsage)
         {
             gpuParts.Add(FormatPercent(gpu?.UsagePercent, settings.DecimalDigits));
-            severities.Add(SeverityClassifier.ForUsage(gpu?.UsagePercent, settings.Thresholds));
+            alertCandidates.Add(AlertStateResolver.ForUsage(
+                gpu?.UsagePercent,
+                settings.Thresholds));
         }
 
         if (settings.ShowGpuMemory)
@@ -166,7 +174,7 @@ public sealed partial class WidgetViewModel : ObservableObject, IDisposable
             sections.Add(
                 $"RAM {FormatMemoryPair(snapshot.SystemMemoryUsedBytes, snapshot.SystemMemoryTotalBytes, settings.DecimalDigits)}" +
                 $" · {FormatPercent(ramPercent, settings.DecimalDigits)}");
-            severities.Add(SeverityClassifier.ForUsage(ramPercent, settings.Thresholds));
+            alertCandidates.Add(AlertStateResolver.ForUsage(ramPercent, settings.Thresholds));
         }
 
         if (sections.Count == 0)
@@ -192,9 +200,8 @@ public sealed partial class WidgetViewModel : ObservableObject, IDisposable
                 : firstLine + Environment.NewLine + secondLine;
         }
 
-        OverallSeverity = severities.Count == 0
-            ? Severity.Unavailable
-            : SeverityClassifier.Maximum(severities.ToArray());
+        OverallAlertState = AlertStateResolver.Resolve(alertCandidates, settings.Thresholds);
+        OverallSeverity = OverallAlertState.Severity;
         var timestamp = snapshot.Timestamp == DateTimeOffset.MinValue
             ? "--:--:--"
             : snapshot.Timestamp.ToString("T");

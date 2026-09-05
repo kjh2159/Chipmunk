@@ -43,6 +43,72 @@ public static class SeverityClassifier
     }
 }
 
+public static class AlertStateResolver
+{
+    /// <summary>
+    /// Resolves the indicator state deterministically. Severity is primary;
+    /// temperature wins over usage within the same severity because it represents
+    /// the more direct hardware-risk signal. Sensor enumeration order is ignored.
+    /// </summary>
+    public static SeverityVisualState Resolve(
+        IEnumerable<AlertCandidate> candidates,
+        ThresholdSettings thresholds)
+    {
+        var selected = candidates
+            .OrderByDescending(candidate => SeverityRank(candidate.Severity))
+            .ThenBy(candidate => ThresholdKindRank(candidate.ThresholdKind))
+            .FirstOrDefault(new AlertCandidate(Severity.Unavailable, ThresholdKind.None));
+
+        var color = selected.Severity is Severity.Warning or Severity.Critical
+            ? thresholds.GetColor(selected.ThresholdKind)
+            : null;
+        return new SeverityVisualState(selected.Severity, selected.ThresholdKind, color);
+    }
+
+    public static AlertCandidate ForTemperature(
+        double? valueCelsius,
+        ThresholdSettings thresholds)
+    {
+        var severity = SeverityClassifier.ForTemperature(valueCelsius, thresholds);
+        var kind = severity switch
+        {
+            Severity.Warning => ThresholdKind.TemperatureWarning,
+            Severity.Critical => ThresholdKind.TemperatureCritical,
+            _ => ThresholdKind.None
+        };
+        return new AlertCandidate(severity, kind);
+    }
+
+    public static AlertCandidate ForUsage(double? percent, ThresholdSettings thresholds)
+    {
+        var severity = SeverityClassifier.ForUsage(percent, thresholds);
+        var kind = severity switch
+        {
+            Severity.Warning => ThresholdKind.UsageWarning,
+            Severity.Critical => ThresholdKind.UsageCritical,
+            _ => ThresholdKind.None
+        };
+        return new AlertCandidate(severity, kind);
+    }
+
+    private static int SeverityRank(Severity severity) => severity switch
+    {
+        Severity.Critical => 3,
+        Severity.Warning => 2,
+        Severity.Normal => 1,
+        _ => 0
+    };
+
+    private static int ThresholdKindRank(ThresholdKind kind) => kind switch
+    {
+        ThresholdKind.TemperatureCritical => 0,
+        ThresholdKind.TemperatureWarning => 0,
+        ThresholdKind.UsageCritical => 1,
+        ThresholdKind.UsageWarning => 1,
+        _ => 2
+    };
+}
+
 public static class MemoryFormatter
 {
     private const double BytesPerGibibyte = 1024d * 1024 * 1024;

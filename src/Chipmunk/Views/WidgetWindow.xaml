@@ -41,7 +41,7 @@
             <Border Grid.Column="0"
                     Width="3"
                     CornerRadius="2"
-                    Background="{Binding OverallSeverity, Converter={StaticResource SeverityBrushConverter}}" />
+                    Background="{Binding OverallAlertState, Converter={StaticResource SeverityBrushConverter}}" />
             <TextBlock x:Name="SensorTextBlock"
                        Grid.Column="1"
                        Margin="9,0,0,0"
